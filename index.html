@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width-device-width, initial-scale=1.0">
+  <title>Constellations | Turnstile Labs</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="landing-page">
+
+  <!-- Header Section -->
+  <header class="page-header">
+    <div class="header-content">
+      <h1 class="header-title">Constellations</h1>
+      <p class="header-subtitle">
+        Transforming mathematical papers into interactive visualizations that illuminate their intricate logical structures.
+      </p>
+    </div>
+  </header>
+
+  <main class="content-wrapper">
+
+    <section id="about">
+      <p>
+        Each paper is rendered as a <i>constellation</i>, where theorems, lemmas, and remarks are the stars, and their dependencies are the lines that connect them.
+      </p>
+    </section>
+    
+    <!-- SECTION 1: Explore a Constellation (As a large button) -->
+    <section class="cta-container">
+      <a href="1705.03104/" class="cta-main">Explore a Constellation</a>
+    </section>
+
+    <!-- SECTION 2: How It Works -->
+    <section id="methodology">
+      <h2>How It Works</h2>
+      <p>
+        The visualizations are the automated output of a dedicated analysis engine developed as part of our research into the structure of mathematical documents. The engine parses the LaTeX source of a paper:
+      </p>
+      <ol class="step-list">
+        <li>Identify core logical artifacts (theorems, lemmas, definitions, etc.).</li>
+        <li>Resolve and extract the definitions of all mathematical notations and objects to enrich each artifact with its necessary prerequisites.</li>
+        <li>Trace the dependency network by analyzing citations in their original context, allowing the engine to infer the semantic type of each link (e.g., <code>uses_result</code>, <code>is_generalization_of</code>, ...).</li>
+      </ol>
+      
+      <p class="wip-note">
+        As a research prototype, this analysis engine is under active development and is continuously improving.
+      </p>
+    </section>
+
+  </main>
+
+  <!-- Footer Section -->
+  <footer>
+    <p>Constellations is an open-source initiative.</p>
+    <p>&copy; 2025 Turnstile Labs. Building the future of mathematical reasoning.</p>
+  </footer>
+
+</body>
+</html>
