@@ -1,5 +1,3 @@
-# Constellations
-
 This project transforms mathematical papers into interactive visualizations, illuminating the intricate logical structure that underpins the research. Each paper is rendered as a "constellation," where theorems, lemmas, and remarks are the stars, and their dependencies are the lines that connect them.
 The goal is to provide a new way to explore, understand, and appreciate the architecture of mathematical papers.
 
