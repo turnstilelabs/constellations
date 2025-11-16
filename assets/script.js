@@ -4,6 +4,33 @@
 // 1. SETUP & CONFIGURATION
 // =============================================================================
 
+// Normalize dependency semantics so arrows always point prerequisite -> dependent
+graphData.edges = graphData.edges.map(e => {
+    const dep = e.dependency_type || "internal";
+    // Collapse to 'used_in' where appropriate and enforce prereq -> dependent
+    if (dep === 'uses_result') {
+        // A uses_result B  =>  B used_in A
+        return { ...e, dependency_type: 'used_in', source: e.target, target: e.source };
+    }
+    if (dep === 'uses_definition') {
+        // A uses_definition B  =>  B used_in A
+        return { ...e, dependency_type: 'used_in', source: e.target, target: e.source };
+    }
+    if (dep === 'is_corollary_of') {
+        // A is_corollary_of B  =>  B used_in A (base result is prerequisite of corollary)
+        return { ...e, dependency_type: 'used_in', source: e.target, target: e.source };
+    }
+    if (dep === 'is_generalization_of') {
+        // A is_generalization_of B  =>  B generalized_by A
+        return { ...e, dependency_type: 'generalized_by', source: e.target, target: e.source };
+    }
+    if (dep === 'provides_remark') {
+        // Drop remark edges from the graph entirely
+        return null;
+    }
+    return e;
+}).filter(Boolean);
+
 const nodeTypes = [...new Set(graphData.nodes.map(d => d.type))];
 const edgeTypes = [...new Set(graphData.edges.map(d => d.dependency_type || "internal"))];
 
@@ -32,6 +59,29 @@ let pinned = false;
 let pinnedNode = null;
 const hiddenTypes = new Set();
 
+// Proof Path state
+let proofMode = false;
+let proofTargetId = null;
+let proofDepth = 1;
+let proofVisibleNodes = new Set();
+let proofVisibleEdges = new Set(); // keys "sourceId=>targetId" in original direction
+
+
+// Quick lookup maps
+const nodeById = new Map(graphData.nodes.map(n => [n.id, n]));
+const outgoingEdgesBySource = new Map();
+const incomingEdgesByTarget = new Map();
+graphData.edges.forEach(e => {
+    const s = typeof e.source === 'object' ? e.source.id : e.source;
+    const t = typeof e.target === 'object' ? e.target.id : e.target;
+    const dep = e.dependency_type || 'internal';
+    if (!outgoingEdgesBySource.has(s)) outgoingEdgesBySource.set(s, []);
+    outgoingEdgesBySource.get(s).push({ s, t, dep });
+    if (!incomingEdgesByTarget.has(t)) incomingEdgesByTarget.set(t, []);
+    incomingEdgesByTarget.get(t).push({ s, t, dep });
+});
+function edgeKey(s, t) { return `${s}=>${t}`; }
+
 // =============================================================================
 // 2. SVG INITIALIZATION
 // =============================================================================
@@ -39,6 +89,16 @@ const hiddenTypes = new Set();
 const svg = d3.select("#graph");
 const width = svg.node().getBoundingClientRect().width;
 const height = svg.node().getBoundingClientRect().height;
+
+// Proof Path Controls (hidden by default; shown in Proof Path mode)
+const proofControlsBar = d3.select(".graph-container")
+    .insert("div", "svg")
+    .attr("class", "proof-controls")
+    .style("display", "none");
+
+proofControlsBar.append("button").attr("id", "unfold-less").attr("class", "depth-btn").text("< Unfold Less");
+proofControlsBar.append("button").attr("id", "unfold-more").attr("class", "depth-btn").text("Unfold More >");
+
 
 // --- ADDED BACK: Define Arrowhead Markers ---
 const defs = svg.append("defs");
@@ -124,6 +184,12 @@ const label = g.append("g")
 // 5. EVENT HANDLERS & SIMULATION TICK
 // =============================================================================
 
+// --- Node Context Menu (PROOF PATH MODE) ---
+node.on("contextmenu", (event, d) => {
+    event.preventDefault();
+    enterProofMode(d.id);
+});
+
 // --- Node Click (FOCUS MODE) ---
 node.on("click", (event, d) => {
     event.stopPropagation();
@@ -152,6 +218,10 @@ node.on("click", (event, d) => {
 
 // --- SVG Background Click (RESET MODE) ---
 svg.on("click", () => {
+    if (proofMode) {
+        exitProofMode();
+        return;
+    }
     if (pinned) {
         pinned = false;
         pinnedNode = null;
@@ -169,24 +239,27 @@ link.on("mouseout", () => { if (!pinned) hideTooltipIfNotPinned(); });
 
 // --- Simulation Tick (UPDATED FOR ARROWS) ---
 simulation.on("tick", () => {
-    // This function now correctly shortens the link so the arrowhead
-    // stops at the edge of the node circle.
-    link.each(function(d) {
-        const targetNodeRadius = radiusScale(nodeDegrees.get(d.target.id) || 1);
-        const dx = d.target.x - d.source.x;
-        const dy = d.target.y - d.source.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+    // Shorten links to stop at edge of target node circle.
+    link.each(function (d) {
+        const sId = typeof d.source === 'object' ? d.source.id : d.source;
+        const tId = typeof d.target === 'object' ? d.target.id : d.target;
+        let from = d.source;
+        let to = d.target;
 
-        // Avoid division by zero
+
+
+        const targetNodeRadius = radiusScale(nodeDegrees.get(to.id) || 1);
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
         if (distance === 0) return;
 
-        // Calculate the new endpoint
-        const newX2 = d.target.x - (dx / distance) * (targetNodeRadius + 2); // +2 for a small gap
-        const newY2 = d.target.y - (dy / distance) * (targetNodeRadius + 2);
+        const newX2 = to.x - (dx / distance) * (targetNodeRadius + 2); // +2 for a small gap
+        const newY2 = to.y - (dy / distance) * (targetNodeRadius + 2);
 
         d3.select(this)
-            .attr("x1", d.source.x)
-            .attr("y1", d.source.y)
+            .attr("x1", from.x)
+            .attr("y1", from.y)
             .attr("x2", newX2)
             .attr("y2", newY2);
     });
@@ -206,7 +279,7 @@ nodeTypes.forEach(type => {
     const item = nodeLegendContainer.append("div").attr("class", "legend-item").attr("id", `legend-item-${type}`);
     item.append("div").attr("class", "legend-color").style("background-color", nodeColors[type]);
     item.append("span").text(type.charAt(0).toUpperCase() + type.slice(1));
-    
+
     item.on("click", () => {
         if (pinned) return;
         if (hiddenTypes.has(type)) {
@@ -276,18 +349,48 @@ function hideTooltipIfNotPinned() {
     }
 }
 
-function hideInfoPanel() { 
-    infoPanel.classed("visible", false); 
+function hideInfoPanel() {
+    infoPanel.classed("visible", false);
 }
 
 function updateInfoPanel(d) {
+    // Title
     infoTitle.text(d.display_name);
-    let infoHTML = `<h4>Preview</h4><p class="math-content">${cleanLatexForDisplay(d.content_preview || 'N/A')}</p>`;
+
+    // Centered Explore button below the title
+    const actionHTML = `
+        <div class="proof-action">
+            <button id="explore-proof-btn" class="depth-btn depth-btn--primary">Explore Proof Path</button>
+        </div>`;
+
+    // Unfold controls directly below when in proof mode for this node
+    let controlsHTML = '';
+    if (proofMode && proofTargetId === d.id) {
+        controlsHTML = `
+        <div class="proof-controls-inline">
+            <button id="unfold-less-inline" class="depth-btn">< Unfold Less</button>
+            <button id="unfold-more-inline" class="depth-btn">Unfold More ></button>
+        </div>`;
+    }
+
+    let infoHTML = `${actionHTML}${controlsHTML}<h4>Preview</h4><p class="math-content">${cleanLatexForDisplay(d.content_preview || 'N/A')}</p>`;
     if (d.prerequisites_preview) {
         infoHTML += `<h4>Prerequisites</h4><p class="math-content">${cleanLatexForDisplay(d.prerequisites_preview)}</p>`;
     }
+
     infoBody.html(infoHTML);
-    infoPanel.classed("visible", true);
+    infoPanel.classed('visible', true);
+
+    // Wire explore button
+    d3.select('#explore-proof-btn').on('click', () => enterProofMode(d.id));
+
+    // Wire inline controls if present
+    if (document.getElementById('unfold-less-inline')) {
+        d3.select('#unfold-less-inline').on('click', () => { if (!proofMode) return; proofDepth = Math.max(1, proofDepth - 1); recomputeProofSubgraph(); updateInfoPanel(nodeById.get(proofTargetId)); });
+        d3.select('#unfold-more-inline').on('click', () => { if (!proofMode) return; proofDepth = Math.min(getMaxPrereqDepth(proofTargetId), proofDepth + 1); recomputeProofSubgraph(); updateInfoPanel(nodeById.get(proofTargetId)); });
+
+    }
+
     if (window.MathJax) {
         MathJax.typesetPromise([infoBody.node()]).catch(err => console.error(err));
     }
@@ -313,4 +416,98 @@ function dragended(event, d) {
     if (!event.active) simulation.alphaTarget(0);
     d.fx = null;
     d.fy = null;
+}
+
+// =============================================================================
+// 8. PROOF PATH MODE FUNCTIONS
+// =============================================================================
+
+function getMaxPrereqDepth(startId) {
+    const visited = new Set([startId]);
+    let frontier = [startId];
+    let depth = 0;
+    while (frontier.length) {
+        const next = [];
+        for (const id of frontier) {
+            const outs = outgoingEdgesBySource.get(id) || [];
+            for (const { t } of outs) {
+                if (!visited.has(t)) {
+                    visited.add(t);
+                    next.push(t);
+                }
+            }
+        }
+        if (next.length === 0) break;
+        depth += 1;
+        frontier = next;
+    }
+    return depth;
+}
+
+function recomputeProofSubgraph() {
+    proofVisibleNodes = new Set([proofTargetId]);
+    proofVisibleEdges = new Set();
+
+    let frontier = [proofTargetId];
+    let level = 0;
+    while (level < proofDepth && frontier.length) {
+        const next = [];
+        for (const id of frontier) {
+            const ins = incomingEdgesByTarget.get(id) || [];
+            for (const { s, t, dep } of ins) {
+                // Exclude 'generalized_by' from Proof Path
+                if (dep === 'generalized_by') continue;
+                proofVisibleNodes.add(s);
+                const key = edgeKey(s, t);
+                proofVisibleEdges.add(key);
+                next.push(s);
+            }
+        }
+        level += 1;
+        frontier = next;
+    }
+    applyProofVisibility();
+}
+
+function applyProofVisibility() {
+    node.style("display", d => proofVisibleNodes.has(d.id) ? null : "none");
+    label.style("display", d => proofVisibleNodes.has(d.id) ? null : "none");
+    link.style("display", l => {
+        const sId = typeof l.source === 'object' ? l.source.id : l.source;
+        const tId = typeof l.target === 'object' ? l.target.id : l.target;
+        return proofVisibleEdges.has(edgeKey(sId, tId)) ? null : "none";
+    });
+    simulation.alpha(0.3).restart();
+}
+
+function enterProofMode(targetId) {
+    proofMode = true;
+    proofTargetId = targetId;
+    proofDepth = 1;
+    pinned = true;
+    pinnedNode = nodeById.get(targetId) || null;
+    hideTooltipIfNotPinned();
+    d3.select(".proof-controls").style("display", "none");
+    recomputeProofSubgraph();
+    if (nodeById.has(targetId)) updateInfoPanel(nodeById.get(targetId));
+}
+
+function exitProofMode() {
+    proofMode = false;
+    proofTargetId = null;
+    proofVisibleNodes = new Set();
+    proofVisibleEdges = new Set();
+
+    d3.select(".proof-controls").style("display", "none");
+    pinned = false;
+    pinnedNode = null;
+    hideInfoPanel();
+    updateVisibility();
+}
+
+// Wire up proof control buttons
+if (document.getElementById('unfold-less')) {
+    d3.select('#unfold-less').on('click', () => { if (!proofMode) return; proofDepth = Math.max(1, proofDepth - 1); recomputeProofSubgraph(); });
+    d3.select('#unfold-more').on('click', () => { if (!proofMode) return; proofDepth = Math.min(getMaxPrereqDepth(proofTargetId), proofDepth + 1); recomputeProofSubgraph(); });
+
 }

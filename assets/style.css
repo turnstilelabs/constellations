@@ -27,12 +27,29 @@ body.landing-page {
   font-size: 17px;
 }
 
-.landing-page h1, .landing-page h2, .landing-page h3 { font-family: 'Inter', sans-serif; color: var(--primary-text); font-weight: 700; line-height: 1.2; margin-bottom: 0.5em; }
-.landing-page a { color: var(--accent); text-decoration: none; transition: color 0.3s ease; }
-.landing-page a:hover { color: var(--accent-hover); }
+.landing-page h1,
+.landing-page h2,
+.landing-page h3 {
+  font-family: 'Inter', sans-serif;
+  color: var(--primary-text);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.5em;
+}
+
+.landing-page a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.landing-page a:hover {
+  color: var(--accent-hover);
+}
 
 .landing-page .page-header {
-  padding: 80px 20px; /* Increased padding for more space */
+  padding: 80px 20px;
+  /* Increased padding for more space */
   text-align: center;
   border-bottom: 1px solid var(--border-color);
   background-color: var(--background);
@@ -42,14 +59,56 @@ body.landing-page {
   position: relative;
 }
 
-.landing-page .header-content { max-width: 800px; margin: 0 auto; position: relative; z-index: 2; }
-.landing-page .header-title { font-size: 3.5rem; font-weight: 900; color: var(--accent); margin: 0; letter-spacing: -1.5px; }
-.landing-page .header-subtitle { font-size: 1.2rem; font-weight: 400; margin: 15px 0 0; color: var(--primary-text); font-family: 'Source Serif 4', serif; font-style: italic; max-width: 650px; margin-left: auto; margin-right: auto; }
+.landing-page .header-content {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
 
-.landing-page .content-wrapper { padding: 60px 20px; max-width: 850px; margin: 0 auto; }
-.landing-page .content-wrapper section { margin-bottom: 50px; padding: 0; text-align: left; }
-.landing-page .content-wrapper h2 { font-size: 2rem; text-align: center; margin-bottom: 30px; }
-.landing-page .content-wrapper p { color: var(--secondary-text); font-size: 1.1rem; margin-bottom: 1em; }
+.landing-page .header-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: var(--accent);
+  margin: 0;
+  letter-spacing: -1.5px;
+}
+
+.landing-page .header-subtitle {
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin: 15px 0 0;
+  color: var(--primary-text);
+  font-family: 'Source Serif 4', serif;
+  font-style: italic;
+  max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.landing-page .content-wrapper {
+  padding: 60px 20px;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.landing-page .content-wrapper section {
+  margin-bottom: 50px;
+  padding: 0;
+  text-align: left;
+}
+
+.landing-page .content-wrapper h2 {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.landing-page .content-wrapper p {
+  color: var(--secondary-text);
+  font-size: 1.1rem;
+  margin-bottom: 1em;
+}
 
 /* --- Special centering for the intro paragraph --- */
 .landing-page #about p {
@@ -68,6 +127,7 @@ body.landing-page {
   justify-content: center;
   margin-bottom: 60px;
 }
+
 .landing-page .cta-main {
   display: inline-block;
   background: var(--accent);
@@ -81,6 +141,7 @@ body.landing-page {
   transition: transform 0.3s ease, background-color 0.3s ease;
   border: 2px solid var(--accent);
 }
+
 .landing-page .cta-main:hover {
   background: var(--accent-hover);
   border-color: var(--accent-hover);
@@ -88,10 +149,46 @@ body.landing-page {
   color: var(--background);
 }
 
-.landing-page .step-list { list-style: none; padding-left: 0; max-width: 700px; margin: 30px auto; counter-reset: step-counter; }
-.landing-page .step-list li { background: var(--surface1); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px 20px; margin-bottom: 12px; font-size: 1.05rem; position: relative; padding-left: 45px; }
-.landing-page .step-list li::before { counter-increment: step-counter; content: counter(step-counter); position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--accent); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1rem; }
-.landing-page code { font-family: monospace; background-color: var(--surface2); padding: 0.2em 0.4em; border-radius: 4px; font-size: 0.9em; color: var(--accent); }
+.landing-page .step-list {
+  list-style: none;
+  padding-left: 0;
+  max-width: 700px;
+  margin: 30px auto;
+  counter-reset: step-counter;
+}
+
+.landing-page .step-list li {
+  background: var(--surface1);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 15px 20px;
+  margin-bottom: 12px;
+  font-size: 1.05rem;
+  position: relative;
+  padding-left: 45px;
+}
+
+.landing-page .step-list li::before {
+  counter-increment: step-counter;
+  content: counter(step-counter);
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.landing-page code {
+  font-family: monospace;
+  background-color: var(--surface2);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  color: var(--accent);
+}
 
 /* --- NEW: Style for the "Work in Progress" note --- */
 .landing-page .wip-note {
@@ -104,7 +201,13 @@ body.landing-page {
   opacity: 0.8;
 }
 
-.landing-page footer { text-align: center; padding: 30px 20px; color: var(--secondary-text); font-size: 0.9rem; border-top: 1px solid var(--border-color); }
+.landing-page footer {
+  text-align: center;
+  padding: 30px 20px;
+  color: var(--secondary-text);
+  font-size: 0.9rem;
+  border-top: 1px solid var(--border-color);
+}
 
 
 /* ======================================================================== */
@@ -118,6 +221,7 @@ body.visualization-page {
   background: var(--background);
   color: var(--primary-text);
 }
+
 /* ... (The rest of the CSS is unchanged and correct) ... */
 .visualization-page .header {
   background: var(--surface1);
@@ -126,41 +230,305 @@ body.visualization-page {
   border: 1px solid var(--border-color);
   margin-bottom: 20px;
 }
+
 .visualization-page h1 {
   font-family: 'Inter', sans-serif;
   margin: 0 0 10px 0;
   font-size: 24px;
   color: var(--accent);
 }
-.visualization-page .authors { font-style: italic; color: var(--secondary-text); margin: -5px 0 15px 0; }
-.visualization-page .arxiv-link { display: inline-block; vertical-align: middle; margin: 0 5px; }
-.visualization-page .arxiv-icon { width: 22px; height: 22px; color: var(--accent); transition: transform 0.2s ease-in-out; }
-.visualization-page .arxiv-link:hover .arxiv-icon { transform: scale(1.15); color: var(--accent-hover); }
-.visualization-page .stats { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-top: 15px; }
-.visualization-page .stat { background: var(--surface2); color: var(--secondary-text); padding: 8px 12px; border-radius: 4px; font-size: 14px; }
-.visualization-page .graph-container { position: relative; background: var(--background); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; }
-.visualization-page .controls { padding: 15px; background: var(--surface1); border-bottom: 1px solid var(--border-color); display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
-.visualization-page .center-button-header { padding: 6px 12px; border: 1px solid var(--border-color); background: var(--surface2); border-radius: 4px; cursor: pointer; font-size: 14px; transition: background-color 0.2s; color: var(--primary-text); }
-.visualization-page .center-button-header:hover { background: var(--surface1); }
-.visualization-page .legend-container { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
-.visualization-page .legend { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
-.visualization-page .legend-title { font-weight: bold; font-size: 12px; margin-right: -5px; font-family: 'Inter', sans-serif; }
-.visualization-page .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; cursor: pointer; user-select: none; font-family: 'Inter', sans-serif; }
-.visualization-page .legend-item.inactive { opacity: 0.4; }
-.visualization-page .legend-color { width: 12px; height: 12px; border-radius: 50%; }
-.visualization-page .edge-legend-line { width: 20px; height: 2px; }
-.visualization-page #graph { width: 100%; height: 80vh; cursor: grab; }
-.visualization-page #graph:active { cursor: grabbing; }
-.visualization-page .node { stroke: var(--surface1); stroke-width: 3px; cursor: pointer; }
-.visualization-page .node:hover { stroke: var(--accent); }
-.visualization-page .link { stroke-opacity: 0.6; stroke-width: 1.5px; transition: stroke-width 0.2s, stroke-opacity 0.2s; cursor: pointer; }
-.visualization-page .link:hover { stroke-width: 4px; stroke-opacity: 1; }
-.visualization-page .node-label { font-size: 12px; fill: var(--primary-text); text-anchor: middle; pointer-events: none; font-weight: 500; font-family: 'Inter', sans-serif; }
-.visualization-page .tooltip { position: absolute; background: var(--surface2); color: var(--primary-text); padding: 12px; border-radius: 6px; font-size: 14px; pointer-events: none; max-width: 450px; z-index: 1000; line-height: 1.6; border: 1px solid var(--border-color); }
-.visualization-page #info-panel { position: absolute; top: 0; right: 0; width: 350px; max-width: 90%; height: 100%; background: var(--surface2); border-left: 1px solid var(--border-color); transform: translateX(105%); transition: transform 0.3s ease-in-out; z-index: 1001; display: flex; flex-direction: column; }
-.visualization-page #info-panel.visible { transform: translateX(0); }
-.visualization-page .info-header { padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-.visualization-page .info-header h2 { font-family: 'Inter', sans-serif; font-size: 16px; margin: 0; color: var(--primary-text); }
-.visualization-page .close-btn { font-size: 24px; font-weight: bold; cursor: pointer; color: var(--secondary-text); border: none; background: none; }
-.visualization-page .info-content { padding: 15px; overflow-y: auto; color: var(--primary-text); }
-.visualization-page .info-content h4 { margin-top: 15px; margin-bottom: 5px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; color: var(--accent); font-family: 'Inter', sans-serif; }
+
+.visualization-page .authors {
+  font-style: italic;
+  color: var(--secondary-text);
+  margin: -5px 0 15px 0;
+}
+
+.visualization-page .arxiv-link {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 5px;
+}
+
+.visualization-page .arxiv-icon {
+  width: 22px;
+  height: 22px;
+  color: var(--accent);
+  transition: transform 0.2s ease-in-out;
+}
+
+.visualization-page .arxiv-link:hover .arxiv-icon {
+  transform: scale(1.15);
+  color: var(--accent-hover);
+}
+
+.visualization-page .stats {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.visualization-page .stat {
+  background: var(--surface2);
+  color: var(--secondary-text);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.visualization-page .graph-container {
+  position: relative;
+  background: var(--background);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.visualization-page .controls {
+  padding: 15px;
+  background: var(--surface1);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Proof Path Controls */
+.visualization-page .proof-controls {
+  padding: 10px 15px;
+  background: var(--surface1);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.visualization-page .depth-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  background: var(--surface2);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  color: var(--primary-text);
+  font-family: 'Inter', sans-serif;
+}
+
+.visualization-page .depth-btn:hover {
+  background: var(--surface1);
+}
+
+.visualization-page .center-button-header {
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  background: var(--surface2);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  color: var(--primary-text);
+}
+
+.visualization-page .center-button-header:hover {
+  background: var(--surface1);
+}
+
+.visualization-page .legend-container {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.visualization-page .legend {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.visualization-page .legend-title {
+  font-weight: bold;
+  font-size: 12px;
+  margin-right: -5px;
+  font-family: 'Inter', sans-serif;
+}
+
+.visualization-page .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.visualization-page .legend-item.inactive {
+  opacity: 0.4;
+}
+
+.visualization-page .legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.visualization-page .edge-legend-line {
+  width: 20px;
+  height: 2px;
+}
+
+.visualization-page #graph {
+  width: 100%;
+  height: 80vh;
+  cursor: grab;
+}
+
+.visualization-page #graph:active {
+  cursor: grabbing;
+}
+
+.visualization-page .node {
+  stroke: var(--surface1);
+  stroke-width: 3px;
+  cursor: pointer;
+}
+
+.visualization-page .node:hover {
+  stroke: var(--accent);
+}
+
+.visualization-page .link {
+  stroke-opacity: 0.6;
+  stroke-width: 1.5px;
+  transition: stroke-width 0.2s, stroke-opacity 0.2s;
+  cursor: pointer;
+}
+
+.visualization-page .link:hover {
+  stroke-width: 4px;
+  stroke-opacity: 1;
+}
+
+.visualization-page .node-label {
+  font-size: 12px;
+  fill: var(--primary-text);
+  text-anchor: middle;
+  pointer-events: none;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+
+.visualization-page .tooltip {
+  position: absolute;
+  background: var(--surface2);
+  color: var(--primary-text);
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  pointer-events: none;
+  max-width: 450px;
+  z-index: 1000;
+  line-height: 1.6;
+  border: 1px solid var(--border-color);
+}
+
+.visualization-page #info-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 350px;
+  max-width: 90%;
+  height: 100%;
+  background: var(--surface2);
+  border-left: 1px solid var(--border-color);
+  transform: translateX(105%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+}
+
+.visualization-page #info-panel.visible {
+  transform: translateX(0);
+}
+
+.visualization-page .info-header {
+  padding: 15px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+}
+
+.visualization-page .info-header .close-btn {
+  margin-left: auto;
+}
+
+/* Inline proof controls inside info panel */
+.visualization-page .proof-controls-inline {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 8px 0 12px;
+  justify-content: center;
+}
+
+/* Centered Explore Proof button below the title */
+.visualization-page .proof-action {
+  display: flex;
+  justify-content: center;
+  margin: 6px 0 8px;
+}
+
+/* Yellow primary button */
+.visualization-page .depth-btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--background);
+  font-weight: 700;
+}
+
+.visualization-page .depth-btn--primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.visualization-page .info-header h2 {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  margin: 0;
+  color: var(--primary-text);
+}
+
+.visualization-page .close-btn {
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  color: var(--secondary-text);
+  border: none;
+  background: none;
+}
+
+.visualization-page .info-content {
+  padding: 15px;
+  overflow-y: auto;
+  color: var(--primary-text);
+}
+
+.visualization-page .info-content h4 {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 5px;
+  color: var(--accent);
+  font-family: 'Inter', sans-serif;
+}
