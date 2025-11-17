@@ -193,6 +193,18 @@ node.on("contextmenu", (event, d) => {
 // --- Node Click (FOCUS MODE) ---
 node.on("click", (event, d) => {
     event.stopPropagation();
+
+    // In Proof Path mode, clicking nodes should NOT change graph visibility.
+    // Only update the right panel (and selection ring) while keeping the current proof subgraph as-is.
+    if (proofMode) {
+        pinned = true;
+        pinnedNode = d;
+        tooltip.style("display", "none");
+        node.classed("selected", n => n.id === d.id);
+        updateInfoPanel(d);
+        return;
+    }
+
     pinned = true;
     pinnedNode = d;
     tooltip.style("display", "none");
