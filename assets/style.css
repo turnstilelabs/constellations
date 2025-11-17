@@ -404,6 +404,11 @@ body.visualization-page {
   stroke: var(--accent);
 }
 
+/* Persist hover ring when a node is selected (clicked/pinned) */
+.visualization-page .node.selected {
+  stroke: var(--accent);
+}
+
 .visualization-page .link {
   stroke-opacity: 0.6;
   stroke-width: 1.5px;

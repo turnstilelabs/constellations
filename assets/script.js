@@ -196,6 +196,7 @@ node.on("click", (event, d) => {
     pinned = true;
     pinnedNode = d;
     tooltip.style("display", "none");
+    node.classed("selected", n => n.id === d.id);
 
     const subgraphNodes = new Set([d.id]);
     graphData.edges.forEach(edge => {
@@ -225,6 +226,7 @@ svg.on("click", () => {
     if (pinned) {
         pinned = false;
         pinnedNode = null;
+        node.classed("selected", false);
         hideInfoPanel();
         updateVisibility();
     }
@@ -487,6 +489,7 @@ function enterProofMode(targetId) {
     pinned = true;
     pinnedNode = nodeById.get(targetId) || null;
     hideTooltipIfNotPinned();
+    node.classed("selected", n => n.id === targetId);
     d3.select(".proof-controls").style("display", "none");
     recomputeProofSubgraph();
     if (nodeById.has(targetId)) updateInfoPanel(nodeById.get(targetId));
@@ -501,6 +504,7 @@ function exitProofMode() {
     d3.select(".proof-controls").style("display", "none");
     pinned = false;
     pinnedNode = null;
+    node.classed("selected", false);
     hideInfoPanel();
     updateVisibility();
 }
