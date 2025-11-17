@@ -417,6 +417,8 @@ function updateInfoPanel(d) {
     if (document.getElementById('generate-distill-btn')) {
         d3.select('#generate-distill-btn').on('click', () => {
             if (!proofMode) return;
+            // Update the URL to reflect distilled view context
+            setDistillUrlState(proofTargetId, proofDepth);
             const model = buildDistillModel();
             renderDistilledWindow(model);
         });
@@ -535,6 +537,8 @@ function exitProofMode() {
     pinnedNode = null;
     node.classed("selected", false);
     hideInfoPanel();
+    // Clear distilled state from URL when leaving proof mode
+    clearDistillUrlState();
     updateVisibility();
 }
 
@@ -544,6 +548,34 @@ if (document.getElementById('unfold-less')) {
     d3.select('#unfold-more').on('click', () => { if (!proofMode) return; proofDepth = Math.min(getMaxPrereqDepth(proofTargetId), proofDepth + 1); recomputeProofSubgraph(); });
 
 }
+
+// Initialize distilled state from URL on load and on history navigation
+function initFromUrl() {
+    try {
+        const url = new URL(window.location.href);
+        const distilled = url.searchParams.get('distilled');
+        const target = url.searchParams.get('target');
+        const depthStr = url.searchParams.get('depth');
+        if (distilled === '1' && target && nodeById.has(target)) {
+            enterProofMode(target);
+            let depth = parseInt(depthStr || '1', 10);
+            if (!Number.isFinite(depth) || depth < 1) depth = 1;
+            depth = Math.min(getMaxPrereqDepth(target), depth);
+            proofDepth = depth;
+            recomputeProofSubgraph();
+            if (nodeById.has(target)) updateInfoPanel(nodeById.get(target));
+            const model = buildDistillModel();
+            renderDistilledWindow(model);
+        }
+    } catch (e) { /* no-op */ }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFromUrl);
+} else {
+    initFromUrl();
+}
+window.addEventListener('popstate', initFromUrl);
 
 // =============================================================================
 // 9. THE DISTILLER: BUILD MODEL, SORT, AND RENDER NEW TAB
@@ -587,6 +619,27 @@ function topoSort(nodeIds, edges) {
         for (const id of nodeIds) if (!seen.has(id)) order.push(id);
     }
     return order;
+}
+
+// Reflect distilled context in the URL (non-reloading)
+function setDistillUrlState(targetId, depth) {
+    try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('distilled', '1');
+        if (targetId) url.searchParams.set('target', String(targetId));
+        if (typeof depth !== 'undefined') url.searchParams.set('depth', String(depth));
+        history.pushState({ distilled: true, targetId, depth }, '', url);
+    } catch (e) { /* no-op */ }
+}
+
+function clearDistillUrlState() {
+    try {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('distilled');
+        url.searchParams.delete('target');
+        url.searchParams.delete('depth');
+        history.pushState({}, '', url);
+    } catch (e) { /* no-op */ }
 }
 
 function splitPrereqItems(text) {
@@ -680,6 +733,7 @@ function buildDistillModel() {
 
     return {
         title: target.display_name || target.label || String(proofTargetId),
+        depth: proofDepth,
         target: {
             id: proofTargetId,
             title: target.display_name || target.label || String(proofTargetId),
@@ -833,6 +887,17 @@ function renderDistilledWindow(model) {
       }
       const model = JSON.parse(document.getElementById('distill-data').textContent);
       const base = 'Distilled-' + sanitizeFilename(model.title || model.target.title);
+      // Reflect doc state in URL for sharing/bookmarking
+      (function setDocUrl(){
+        try {
+          const openerHref = (window.opener && window.opener.location && window.opener.location.href) || window.location.href;
+          const url = new URL(openerHref);
+          url.searchParams.set('distilled_doc', '1');
+          if (model && model.target && model.target.id) url.searchParams.set('target', String(model.target.id));
+          if (typeof model.depth !== 'undefined') url.searchParams.set('depth', String(model.depth));
+          history.replaceState({ distilled_doc: true, target: model?.target?.id, depth: model?.depth }, '', url);
+        } catch (e) { /* no-op */ }
+      })();
 
       const texBtn = document.getElementById('download-tex');
       if (texBtn){
