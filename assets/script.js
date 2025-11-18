@@ -960,9 +960,9 @@ function renderDistilledWindow(model) {
     </section>
   </div>
   <script id="distill-data" type="application/json">${JSON.stringify(model).replace(/</g, '\\u003c')}</script>
-  <script src="../assets/explainer.js"></script>
+
   <script src="../assets/distilled_boot.js"></script>
-  <script type="application/json" id="disabled-inline">
+  <script type="text/javascript" id="distilled-inline">
 
     (function() {
       function sanitizeFilename(s) {
@@ -1027,8 +1027,7 @@ function renderDistilledWindow(model) {
         });
       }
 
-      // Hand off Explainer logic to external script (assets/explainer.js)
-      return;
+
 
       // =============================
       // The Explainer (Client-side)
