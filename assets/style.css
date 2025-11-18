@@ -291,9 +291,9 @@ body.visualization-page {
   background: var(--surface1);
   border-bottom: 1px solid var(--border-color);
   display: flex;
-  gap: 20px;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
 }
 
 /* Proof Path Controls */
@@ -323,20 +323,9 @@ body.visualization-page {
   background: var(--surface1);
 }
 
-.visualization-page .center-button-header {
-  padding: 6px 12px;
-  border: 1px solid var(--border-color);
-  background: var(--surface2);
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
-  color: var(--primary-text);
-}
 
-.visualization-page .center-button-header:hover {
-  background: var(--surface1);
-}
+
+
 
 .visualization-page .legend-container {
   display: flex;

@@ -430,9 +430,6 @@ function updateInfoPanel(d) {
 }
 
 d3.select("#close-info-panel").on("click", hideInfoPanel);
-d3.select("#center").on("click", () => {
-  svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
-});
 
 function dragstarted(event, d) {
   if (!event.active) simulation.alphaTarget(0.3).restart();
