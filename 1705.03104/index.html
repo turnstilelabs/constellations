@@ -7,6 +7,7 @@
     <title>Sharp phase transition for the random-cluster and Potts models via decision trees</title>
 
     <link rel="stylesheet" href="../assets/style.css">
+    <link rel="icon" href="../assets/constellation_bg.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -68,7 +69,7 @@
 
     <script>
         // This is the ONLY part that changes for each paper.
-        const graphData = {
+        window.graphData = {
             "nodes": [
                 { "id": "theorem-1-8adf0c", "type": "theorem", "content_preview": "Fix an increasing function $f:\\{0,1\\}^E\\longrightarrow [0,1]$ on a finite set $E$. For any monotonic measure $\\mu$ and any decision tree $T$,  $\\begin{equation} \\mathrm{Var}_\\mu(f)~\\le~   ...\\end{equation}$", "prerequisites_preview": "$E$: Consider a finite set $E$ of cardinality $n$.\n\n$\\mu$: A \\emph{monotonic} measure is a measure $\\mu$ on ${0,1}^{E}$ such that for any $e \\in E$, any $F \\subset E$, and any $\\xi,\\zeta \\in {0,1}^{F}$ satisfying $\\xi \\le  \\zeta $, $\\mu[\\omega_e=\\xi_e,\\forall e \\in F]>0$ and  $\\mu[\\omega_e=\\zeta_e,\\forall e \\in F]>0$,   $$\\mu[\\omega_e=1 :|: \\omega_e=\\xi_e,\\forall e \\in F] \\le \\mu[\\omega_e=1 :|: \\omega_e=\\zeta_e,\\forall e \\in F].$$ \n\n$\\omega$: A decision tree associated to a Boolean function $f$ takes $\\omega\\in\\{0,1\\}^n$ as an input, and reveals algorithmically the value of $\\omega$ in different bits one by one.\n\ndecision tree: To start with a more tractable problem, computer scientists have studied \\emph{decision trees}, which are simpler models of computation. A decision tree associated to a Boolean function $f$ takes $\\omega\\in\\{0,1\\}^n$ as an input, and reveals algorithmically the value of $\\omega$ in different bits one by one.\n\nrevealment: When $\\tau$ is taken to be the time at which $f$ is determined, the $\\tau$-revealment simply corresponds to the standard notion of revealment associated to a random decision tree.", "display_name": "Theorem 1.1", "label": "thm:OSSS" },
                 { "id": "theorem-2-9c9e2e", "type": "theorem", "content_preview": "Fix $q \\geq 1$ and consider the random-cluster model on a weighted lattice $(\\bbG, J)$.\nThen,\n- There exists $c>0$ such that $\\theta(\\beta)\\ge c(\\beta-\\beta_c)$ for any $\\beta \\ge \\beta_c$ close enough to $\\beta_c$.\n- For any $\\beta<\\beta_c$ there exists $c_\\beta>0$ such that for every $n\\ge0$,\n$$\\phi_{\\Lambda_n,\\beta,q}^{\\rm w}[0\\longleftrightarrow \\partial\\Lambda_n]\\le \\exp[-c_\\beta n].$$", "prerequisites_preview": "$J$: Introduce a family of \\emph{non-negative} coupling constants $J=(J_{xy})_{xy\\in \\bbE}\\in[0,\\infty)^\\bbE$ which is non-zero and invariant under a group acting transitively on $\\bbV$.\n\n$\\Lambda_n$: Finally, let $\\Lambda_n$ be the box of size $n$ around $0$ for the graph distance.\n\nweighted lattice: Introduce a family of \\emph{non-negative} coupling constants $J=(J_{xy})_{xy\bbE} [0,\\infty)^E$ which is non-zero and invariant under a group acting transitively on $V$. Notice that the coupling constants are necessarily finite-range (since the graph is locally finite). We call the pair $(\\bbG,J)$ a \\emph{weighted lattice}.", "display_name": "Theorem 1.2", "label": "thm:RCM" },
@@ -117,7 +118,7 @@
         };
     </script>
     <!-- Link to the shared JavaScript file -->
-    <script src="../assets/script.js"></script>
+    <script type="module" src="../assets/modules/main.js"></script>
 </body>
 
 </html>

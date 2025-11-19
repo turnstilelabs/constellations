@@ -1,0 +1,125 @@
+
+// Actually, let's duplicate cleanLatexForDisplay here or create a utils module.
+// For simplicity, I'll redefine it here as it's small.
+
+function cleanLatex(content) {
+    if (!content) return '';
+    return content.replace(/\\label\{[^}]*\}/g, '').trim();
+}
+
+export function setupLegends(nodeTypes, edgeTypes, nodeColors, edgeColors, state, actions) {
+    const nodeLegendContainer = d3.select("#node-legend-container");
+    nodeTypes.forEach(type => {
+        const item = nodeLegendContainer.append("div").attr("class", "legend-item").attr("id", `legend-item-${type}`);
+        item.append("div").attr("class", "legend-color").style("background-color", nodeColors[type]);
+        item.append("span").text(type.charAt(0).toUpperCase() + type.slice(1));
+
+        item.on("click", () => {
+            if (state.pinned) return;
+            if (state.hiddenTypes.has(type)) {
+                state.hiddenTypes.delete(type);
+                item.classed("inactive", false);
+            } else {
+                state.hiddenTypes.add(type);
+                item.classed("inactive", true);
+            }
+            actions.updateVisibility();
+        });
+    });
+
+    const edgeLegendContainer = d3.select("#edge-legend-container");
+    edgeTypes.forEach(type => {
+        const item = edgeLegendContainer.append("div").attr("class", "legend-item");
+        item.append("div").attr("class", "edge-legend-line").style("background-color", edgeColors[type]);
+        item.append("span").text(type.replace(/_/g, ' '));
+    });
+}
+
+export function renderNodeTooltip(tooltip, event, d) {
+    const finalPreview = cleanLatex(d.content_preview || 'N/A');
+    tooltip.style("display", "block")
+        .html(`<h4>${d.display_name}</h4><div class="math-content">${finalPreview}</div>`)
+        .style("left", (event.pageX + 15) + "px")
+        .style("top", (event.pageY - 28) + "px");
+
+    if (window.MathJax) {
+        MathJax.typesetPromise([tooltip.node()]).catch(err => console.error('MathJax typesetting failed:', err));
+    }
+}
+
+export function hideTooltip(tooltip) {
+    tooltip.style("display", "none");
+}
+
+export function updateInfoPanel(infoPanel, infoTitle, infoBody, d, state, actions) {
+    // Title
+    infoTitle.text(d.display_name);
+
+    // Centered Explore button below the title
+    const actionHTML = `
+        <div class="proof-action">
+            <button id="explore-proof-btn" class="depth-btn depth-btn--primary">Explore Proof Path</button>
+        </div>`;
+
+    // Unfold controls directly below when in proof mode for this node
+    let controlsHTML = '';
+    if (state.proofMode && state.proofTargetId === d.id) {
+        controlsHTML = `
+        <div class="proof-controls-inline">
+            <button id="unfold-less-inline" class="depth-btn">< Unfold Less</button>
+            <button id="unfold-more-inline" class="depth-btn">Unfold More ></button>
+        </div>`;
+    }
+    // Distiller activation button (only in Proof Path mode for this target)
+    let distillHTML = '';
+    if (state.proofMode && state.proofTargetId === d.id) {
+        distillHTML = `
+        <div class="proof-action">
+            <button id="generate-distill-btn" class="depth-btn depth-btn--primary">Generate Distilled Proof</button>
+        </div>`;
+    }
+
+    let infoHTML = `${actionHTML}${controlsHTML}${distillHTML}<h4>Preview</h4><p class="math-content">${cleanLatex(d.content_preview || 'N/A')}</p>`;
+    if (d.prerequisites_preview) {
+        infoHTML += `<h4>Prerequisites</h4><p class="math-content">${cleanLatex(d.prerequisites_preview)}</p>`;
+    }
+
+    infoBody.html(infoHTML);
+    infoPanel.classed('visible', true);
+
+    // Wire explore button
+    d3.select('#explore-proof-btn').on('click', () => actions.enterProofMode(d.id));
+
+    // Wire inline controls if present
+    if (document.getElementById('unfold-less-inline')) {
+        d3.select('#unfold-less-inline').on('click', () => actions.unfoldLess());
+        d3.select('#unfold-more-inline').on('click', () => actions.unfoldMore());
+    }
+
+    // Wire Distiller button if present
+    if (document.getElementById('generate-distill-btn')) {
+        d3.select('#generate-distill-btn').on('click', () => actions.generateDistilledProof());
+    }
+
+    if (window.MathJax) {
+        MathJax.typesetPromise([infoBody.node()]).catch(err => console.error(err));
+    }
+}
+
+export function hideInfoPanel(infoPanel) {
+    infoPanel.classed("visible", false);
+}
+
+export function setupProofControls(container, actions) {
+    const proofControlsBar = d3.select(container)
+        .insert("div", "svg")
+        .attr("class", "proof-controls")
+        .style("display", "none");
+
+    proofControlsBar.append("button").attr("id", "unfold-less").attr("class", "depth-btn").text("< Unfold Less")
+        .on("click", actions.unfoldLess);
+    proofControlsBar.append("button").attr("id", "unfold-more").attr("class", "depth-btn").text("Unfold More >")
+        .on("click", actions.unfoldMore);
+
+    return proofControlsBar;
+}

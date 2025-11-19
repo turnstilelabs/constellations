@@ -106,11 +106,26 @@
         var item = document.querySelector('.result-item[data-id="' + id + '"]');
         if (!item) return;
         item.classList.remove('collapsed');
-        var kids = getChildren(id);
         var container = document.querySelector('.child-results[data-parent="' + id + '"]');
         if (!container) return;
-        if (!kids || !kids.length) { return; }
-        for (var i = 0; i < kids.length; i++) ensureChildRendered(id, kids[i]);
+
+        // If no children are currently rendered for this item, render its immediate children.
+        var existing = container.querySelectorAll('.result-item[data-id]');
+        if (!existing || existing.length === 0) {
+            var kids = getChildren(id) || [];
+            for (var i = 0; i < kids.length; i++) ensureChildRendered(id, kids[i]);
+            try { if (window.MathJax && window.MathJax.typesetPromise) MathJax.typesetPromise([container]); } catch (_) { }
+            return;
+        }
+
+        // Otherwise, expand one more level: for each existing child, render its children.
+        for (var j = 0; j < existing.length; j++) {
+            var childEl = existing[j];
+            var cid = childEl.getAttribute('data-id');
+            var gkids = getChildren(cid) || [];
+            for (var k = 0; k < gkids.length; k++) ensureChildRendered(cid, gkids[k]);
+        }
+        try { if (window.MathJax && window.MathJax.typesetPromise) MathJax.typesetPromise([container]); } catch (_) { }
     }
 
     document.addEventListener('click', function (e) {
