@@ -288,6 +288,25 @@ export function renderDistilledWindow(model) {
   .key-modal .dialog h3 { margin: 0 0 10px; font-family: 'Inter', system-ui, sans-serif; font-size: 16px; }
   .key-modal .dialog input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
   .key-modal .dialog .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
+  /* Overlay layers for pins and highlights */
+  .overlay-layer { position: fixed; inset: 0; pointer-events: none; z-index: 1500; }
+  .highlight-rect { position: fixed; background: rgba(255, 221, 87, 0.35); outline: 1px solid #ffd94a; border-radius: 2px; }
+  #pin-layer { position: fixed; inset: 0; pointer-events: none; z-index: 1501; }
+  .pin { position: fixed; width: 18px; height: 18px; border-radius: 50%; background: #ffd94a; border: 1px solid #caa500; box-shadow: 0 1px 2px rgba(0,0,0,0.2); pointer-events: auto; cursor: pointer; }
+
+  /* Right-side comment panel */
+  .comment-panel { position: fixed; top: 0; right: 0; width: 360px; height: 100vh; background: #fff; color: #111; border-left: 1px solid #ddd; transform: translateX(100%); transition: transform 200ms ease; z-index: 1600; display: flex; flex-direction: column; }
+  .comment-panel.open { transform: translateX(0); }
+  .comment-panel header { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid #eee; font-family: 'Inter', system-ui, sans-serif; font-weight: 600; }
+  .comment-panel header .close { font-size: 22px; border: none; background: none; cursor: pointer; }
+  .threads { overflow: auto; padding: 10px; flex: 1; }
+  .thread-card { border: 1px solid #eee; border-radius: 6px; padding: 8px; margin-bottom: 10px; background: #fafafa; }
+  .thread-card.active { outline: 2px solid #ffd94a; background: #fffde7; }
+  .thread-card header { display: flex; align-items: center; justify-content: space-between; font-family: 'Inter', system-ui, sans-serif; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+  .thread-card header .actions .icon-btn { width: 24px; height: 24px; border: none; background: none; cursor: pointer; font-size: 18px; line-height: 1; color: #666; border-radius: 4px; }
+  .thread-card header .actions .icon-btn:hover { background: #f2f2f2; color: #333; }
+  .thread-card .content { max-height: 320px; overflow: auto; }
+
   @media print {
     header .actions { display: none; }
     a { color: inherit; text-decoration: none; }
@@ -304,11 +323,10 @@ export function renderDistilledWindow(model) {
       packages: {'[+]': ['ams']},
       macros: { bbE: '\\\\mathbb{E}', bbP: '\\\\mathbb{P}', bbZ: '\\\\mathbb{Z}', bbR: '\\\\mathbb{R}', bbG: '\\\\mathbb{G}', bbH: '\\\\mathbb{H}', bbV: '\\\\mathbb{V}', mathbbm: ['{\\\\mathbf{#1}}', 1], mathbbm1: '\\\\mathbf{1}', llbracket: '\\\\mathopen{[\\\\![}', rrbracket: '\\\\mathclose{]\\\\!]}' }
     },
-    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
-    svg: { fontCache: 'global' }
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
   };
 </script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 </head>
 <body>
@@ -346,6 +364,17 @@ export function renderDistilledWindow(model) {
 <!-- Data embedded for the boot script -->
 <script type="application/json" id="distill-data">${JSON.stringify(model)}</script>
 <div id="explainer-menu" class="explainer-menu"></div>
+<!-- Overlay roots for highlights and pins -->
+<div id="highlight-layer" class="overlay-layer"></div>
+<div id="pin-layer"></div>
+<!-- Right-side comments panel -->
+<aside id="comment-panel" class="comment-panel" aria-label="Comments">
+  <header>
+    <div>Comments</div>
+    <button id="close-panel" class="close" title="Close">×</button>
+  </header>
+  <div id="threads" class="threads"></div>
+</aside>
 <div id="key-modal" class="key-modal">
   <div class="dialog">
     <h3>Set OpenAI API key</h3>
