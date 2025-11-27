@@ -215,23 +215,38 @@
         var text = String(sel.toString() || '').trim();
         var range = sel.rangeCount ? sel.getRangeAt(0) : null;
 
-        // Fallback: if selection text is empty (e.g., SVG-rendered math), try to extract text from the range contents
-        if ((!text || text.length < 2) && range) {
+        // Detect if selection is within MathJax content
+        function isInMath(node) {
+            try {
+                var el = node && (node.nodeType === 1 ? node : node.parentElement);
+                while (el && el !== document.body) {
+                    if (el.tagName && (el.tagName.toLowerCase() === 'mjx-container' || el.tagName.toLowerCase() === 'mjx-math')) return true;
+                    el = el.parentElement;
+                }
+            } catch (_) { }
+            return false;
+        }
+        var inMath = !!(range && isInMath(range.commonAncestorContainer));
+
+        // Fallback: if selection text is empty (e.g., math), try to extract text from the range contents
+        if ((!text || (inMath ? text.length < 1 : text.length < 2)) && range) {
             try {
                 var frag = range.cloneContents();
                 var t2 = (frag && frag.textContent ? String(frag.textContent) : '').trim();
-                if (t2 && t2.length >= 2) text = t2;
+                if (t2 && (inMath ? t2.length >= 1 : t2.length >= 2)) text = t2;
             } catch (e) { /* no-op */ }
         }
         // Fallback 2: use a short slice of the nearest block's innerText as context if still empty
-        if ((!text || text.length < 2) && range && range.commonAncestorContainer) {
+        if ((!text || (inMath ? text.length < 1 : text.length < 2)) && range && range.commonAncestorContainer) {
             var ctxNode = range.commonAncestorContainer.nodeType === 1 ? range.commonAncestorContainer : range.commonAncestorContainer.parentElement;
             var block = findBlockElement(ctxNode);
             var ctxText = (block && typeof block.innerText === 'string') ? block.innerText.trim() : '';
-            if (ctxText && ctxText.length >= 2) text = ctxText.slice(0, 200);
+            if (ctxText && (inMath ? ctxText.length >= 1 : ctxText.length >= 2)) text = ctxText.slice(0, inMath ? 120 : 200);
         }
 
-        if (!text || text.length < 2 || !range) return null;
+        // Enforce minimum length depending on math context
+        if (!range) return null;
+        if (inMath ? (text.length < 1) : (text.length < 2)) return null;
 
         // Reject selections inside the comment panel/threads
         try {

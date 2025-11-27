@@ -270,6 +270,9 @@ export function renderDistilledWindow(model) {
   .muted { color: var(--muted); font-style: italic; }
   .result-item, .def-item, .target-item { margin: 14px 0; }
   .math-content { line-height: 1.6; }
+  /* Ensure math and its containers are selectable */
+  .math-content, .math-content * { -webkit-user-select: text; user-select: text; }
+  mjx-container, mjx-container * { -webkit-user-select: text; user-select: text; }
   /* Distilled proof controls and layout */
   .result-item .child-results { margin-left: 16px; border-left: 2px solid #eee; padding-left: 12px; }
   .result-item.collapsed > .child-results { display: none; }
