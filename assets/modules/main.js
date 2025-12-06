@@ -5,6 +5,7 @@ import { setupDrag, setupInteractions } from './interaction.js';
 import { setupLegends, renderNodeTooltip, hideTooltip, updateInfoPanel, hideInfoPanel, setupProofControls } from './ui.js';
 import { getMaxPrereqDepth, recomputeProofSubgraph, applyProofVisibility } from './proof.js';
 import { buildDistillModel, renderDistilledWindow } from './distiller.js';
+import { createReviewController } from './review.js';
 
 // Global State
 const state = {
@@ -16,7 +17,8 @@ const state = {
     proofDepth: 1,
     proofVisibleNodes: new Set(),
     proofVisibleEdges: new Set(),
-    graphData: null // Will be set after processing
+    graphData: null, // Will be set after processing
+    reviewCtl: null
 };
 
 // DOM Elements
@@ -131,6 +133,23 @@ const actions = {
             url.searchParams.delete('depth');
             history.pushState({}, '', url);
         } catch (e) { /* no-op */ }
+    },
+
+    enterReviewMode: (startId) => {
+        // Lazily create review controller with the data structures we already have
+        if (!state.reviewCtl) {
+            const processedForReview = {
+                nodes: state.graphData && state.graphData.nodes ? state.graphData.nodes : [],
+                incomingEdgesByTarget: state.refs && state.refs.incomingEdgesByTarget ? state.refs.incomingEdgesByTarget : new Map(),
+                nodeById: state.refs && state.refs.nodeById ? state.refs.nodeById : new Map()
+            };
+            state.reviewCtl = createReviewController(state, processedForReview);
+        }
+        state.reviewCtl.enter(startId);
+    },
+
+    exitReviewMode: () => {
+        if (state.reviewCtl) state.reviewCtl.exit();
     }
 };
 
@@ -171,6 +190,22 @@ function init() {
     // Close button for info panel
     d3.select("#close-info-panel").on("click", actions.hideInfoPanel);
 
+    // Header "Review this Paper" button if present
+    const reviewBtn = document.getElementById('btn-review-paper');
+    if (reviewBtn) reviewBtn.addEventListener('click', () => actions.enterReviewMode());
+
+    // Keyboard shortcut: R to open Review Mode (when graph has focus)
+    window.addEventListener('keydown', (e) => {
+        if ((e.key === 'r' || e.key === 'R') && !state.proofMode) {
+            // Avoid stealing focus from inputs
+            const active = document.activeElement;
+            const tag = active && active.tagName ? active.tagName.toLowerCase() : '';
+            if (tag !== 'input' && tag !== 'textarea' && tag !== 'select' && !active?.isContentEditable) {
+                actions.enterReviewMode();
+            }
+        }
+    });
+
     // URL State handling
     function initFromUrl() {
         try {
@@ -186,11 +221,14 @@ function init() {
                 state.proofDepth = depth;
                 actions.recomputeProofSubgraph();
                 if (processedData.nodeById.has(target)) actions.updateInfoPanel(processedData.nodeById.get(target));
+                // no auto-open distilled window
+            }
 
-                // Auto-open distilled window? Original code did:
-                // const model = buildDistillModel();
-                // renderDistilledWindow(model);
-                // But popups might be blocked.
+            // Review Mode deep link
+            const review = url.searchParams.get('review');
+            const start = url.searchParams.get('start');
+            if (review === '1') {
+                actions.enterReviewMode(start || undefined);
             }
         } catch (e) { /* no-op */ }
     }
