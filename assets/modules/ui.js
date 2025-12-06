@@ -55,10 +55,12 @@ export function updateInfoPanel(infoPanel, infoTitle, infoBody, d, state, action
     // Title
     infoTitle.text(d.display_name);
 
-    // Centered Explore button below the title
+    // Centered Explore + Review buttons below the title
+    const reviewBtnHTML = (d.type === 'theorem') ? `<button id="review-theorem-btn" class="depth-btn">Review this Theorem</button>` : '';
     const actionHTML = `
-        <div class="proof-action">
+        <div class="proof-action" style="gap:8px">
             <button id="explore-proof-btn" class="depth-btn depth-btn--primary">Explore Proof Path</button>
+            ${reviewBtnHTML}
         </div>`;
 
     // Unfold controls directly below when in proof mode for this node
@@ -89,6 +91,10 @@ export function updateInfoPanel(infoPanel, infoTitle, infoBody, d, state, action
 
     // Wire explore button
     d3.select('#explore-proof-btn').on('click', () => actions.enterProofMode(d.id));
+    // Wire review button
+    if (document.getElementById('review-theorem-btn')) {
+        d3.select('#review-theorem-btn').on('click', () => actions.enterReviewMode(d.id));
+    }
 
     // Wire inline controls if present
     if (document.getElementById('unfold-less-inline')) {
