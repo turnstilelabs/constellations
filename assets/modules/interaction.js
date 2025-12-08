@@ -66,6 +66,7 @@ export function setupInteractions(node, link, svg, state, actions) {
         });
 
         actions.updateInfoPanel(d);
+        actions.updateFloatingControls();
     });
 
     // SVG Background Click (RESET MODE)
@@ -80,6 +81,7 @@ export function setupInteractions(node, link, svg, state, actions) {
             node.classed("selected", false);
             actions.hideInfoPanel();
             actions.updateVisibility();
+            actions.updateFloatingControls();
         }
     });
 

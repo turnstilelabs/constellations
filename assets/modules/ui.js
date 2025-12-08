@@ -129,3 +129,54 @@ export function setupProofControls(container, actions) {
 
     return proofControlsBar;
 }
+
+export function setupFloatingControls(container, actions) {
+    const floatingControls = d3.select(container)
+        .append("div")
+        .attr("class", "floating-controls")
+        .style("display", "none");
+
+    floatingControls.append("button")
+        .attr("id", "floating-explore-btn")
+        .attr("class", "depth-btn depth-btn--primary")
+        .text("Explore Proof Path")
+        .on("click", function() {
+            const nodeId = d3.select(this).attr("data-node-id");
+            if (nodeId) actions.enterProofMode(nodeId);
+        });
+
+    floatingControls.append("button")
+        .attr("id", "floating-unfold-less")
+        .attr("class", "depth-btn")
+        .text("< Unfold Less")
+        .on("click", actions.unfoldLess);
+
+    floatingControls.append("button")
+        .attr("id", "floating-unfold-more")
+        .attr("class", "depth-btn")
+        .text("Unfold More >")
+        .on("click", actions.unfoldMore);
+
+    return floatingControls;
+}
+
+export function updateFloatingControls(floatingControls, state) {
+    if (state.proofMode) {
+        // In proof mode: show unfold buttons
+        floatingControls.style("display", "flex");
+        floatingControls.select("#floating-explore-btn").style("display", "none");
+        floatingControls.select("#floating-unfold-less").style("display", "block");
+        floatingControls.select("#floating-unfold-more").style("display", "block");
+    } else if (state.pinnedNode) {
+        // Node selected but not in proof mode: show explore button
+        floatingControls.style("display", "flex");
+        floatingControls.select("#floating-explore-btn")
+            .style("display", "block")
+            .attr("data-node-id", state.pinnedNode.id);
+        floatingControls.select("#floating-unfold-less").style("display", "none");
+        floatingControls.select("#floating-unfold-more").style("display", "none");
+    } else {
+        // Nothing selected: hide everything
+        floatingControls.style("display", "none");
+    }
+}

@@ -2,7 +2,7 @@ import { processGraphData } from './data.js';
 import { initializeGraph, renderElements } from './graph.js';
 import { setupSimulation, updateSimulationTick } from './simulation.js';
 import { setupDrag, setupInteractions } from './interaction.js';
-import { setupLegends, renderNodeTooltip, hideTooltip, updateInfoPanel, hideInfoPanel, setupProofControls } from './ui.js';
+import { setupLegends, renderNodeTooltip, hideTooltip, updateInfoPanel, hideInfoPanel, setupProofControls, setupFloatingControls, updateFloatingControls } from './ui.js';
 import { getMaxPrereqDepth, recomputeProofSubgraph, applyProofVisibility } from './proof.js';
 import { buildDistillModel, renderDistilledWindow } from './distiller.js';
 import { createReviewController } from './review.js';
@@ -29,6 +29,12 @@ const tooltip = d3.select("#tooltip");
 
 // Actions object to pass around
 const actions = {
+    updateFloatingControls: () => {
+        if (state.refs.floatingControls) {
+            updateFloatingControls(state.refs.floatingControls, state);
+        }
+    },
+
     updateVisibility: () => {
         const { node, label, link, simulation, graphData } = state.refs;
         node.style("display", d => state.hiddenTypes.has(d.type) ? "none" : null);
@@ -58,20 +64,11 @@ const actions = {
 
         actions.hideTooltip();
         state.refs.node.classed("selected", n => n.id === targetId);
-        d3.select(".proof-controls").style("display", "none"); // Hide global controls initially? Or show? Original code hid them then recomputed.
-        // Actually original code: d3.select(".proof-controls").style("display", "none");
-        // But then recomputeProofSubgraph calls applyProofVisibility.
-        // Wait, where are controls shown? Ah, they are inline in the panel, or global bar?
-        // The original code had a global bar that was hidden by default, and shown... wait.
-        // Original: proofControlsBar...style("display", "none");
-        // It seems the global bar might be unused or hidden in favor of inline controls? 
-        // Let's check original code... 
-        // "Proof Path Controls (hidden by default; shown in Proof Path mode)"
-        // But enterProofMode hides it: d3.select(".proof-controls").style("display", "none");
-        // Maybe it was intended to be shown? Let's stick to original behavior for now.
+        d3.select(".proof-controls").style("display", "none");
 
         actions.recomputeProofSubgraph();
         if (state.refs.nodeById.has(targetId)) actions.updateInfoPanel(state.refs.nodeById.get(targetId));
+        actions.updateFloatingControls();
     },
 
     exitProofMode: () => {
@@ -87,6 +84,7 @@ const actions = {
         actions.hideInfoPanel();
         actions.clearDistillUrlState();
         actions.updateVisibility();
+        actions.updateFloatingControls();
     },
 
     recomputeProofSubgraph: () => {
@@ -187,8 +185,14 @@ function init() {
     setupInteractions(node, link, svg, state, actions);
     setupLegends(processedData.nodeTypes, processedData.edgeTypes, processedData.nodeColors, processedData.edgeColors, state, actions);
 
+    // Setup floating controls
+    const floatingControls = setupFloatingControls(".graph-container", actions);
+    state.refs.floatingControls = floatingControls;
+
     // Close button for info panel
-    d3.select("#close-info-panel").on("click", actions.hideInfoPanel);
+    d3.select("#close-info-panel").on("click", () => {
+        actions.hideInfoPanel();
+    });
 
     // Header "Review this Paper" button if present
     const reviewBtn = document.getElementById('btn-review-paper');
