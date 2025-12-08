@@ -57,19 +57,9 @@ export function updateInfoPanel(infoPanel, infoTitle, infoBody, d, state, action
 
     // Review button for theorems
     const reviewBtnHTML = (d.type === 'theorem') ? `<button id="review-theorem-btn" class="depth-btn">Review this Theorem</button>` : '';
-
-    // Distiller activation button (only in Proof Path mode for this target)
-    let distillHTML = '';
-    if (state.proofMode && state.proofTargetId === d.id) {
-        distillHTML = `
-        <div class="proof-action">
-            <button id="generate-distill-btn" class="depth-btn depth-btn--primary">Generate Distilled Proof</button>
-        </div>`;
-    }
-
     const actionHTML = reviewBtnHTML ? `<div class="proof-action" style="gap:8px">${reviewBtnHTML}</div>` : '';
 
-    let infoHTML = `${actionHTML}${distillHTML}<h4>Preview</h4><p class="math-content">${cleanLatex(d.content_preview || 'N/A')}</p>`;
+    let infoHTML = `${actionHTML}<h4>Preview</h4><p class="math-content">${cleanLatex(d.content_preview || 'N/A')}</p>`;
     if (d.prerequisites_preview) {
         infoHTML += `<h4>Prerequisites</h4><p class="math-content">${cleanLatex(d.prerequisites_preview)}</p>`;
     }
@@ -80,11 +70,6 @@ export function updateInfoPanel(infoPanel, infoTitle, infoBody, d, state, action
     // Wire review button
     if (document.getElementById('review-theorem-btn')) {
         d3.select('#review-theorem-btn').on('click', () => actions.enterReviewMode(d.id));
-    }
-
-    // Wire Distiller button if present
-    if (document.getElementById('generate-distill-btn')) {
-        d3.select('#generate-distill-btn').on('click', () => actions.generateDistilledProof());
     }
 
     if (window.MathJax) {
@@ -137,16 +122,23 @@ export function setupFloatingControls(container, actions) {
         .text("Unfold More >")
         .on("click", actions.unfoldMore);
 
+    floatingControls.append("button")
+        .attr("id", "floating-distill-btn")
+        .attr("class", "depth-btn depth-btn--primary")
+        .text("Generate Distilled Proof")
+        .on("click", actions.generateDistilledProof);
+
     return floatingControls;
 }
 
 export function updateFloatingControls(floatingControls, state) {
     if (state.proofMode) {
-        // In proof mode: show unfold buttons
+        // In proof mode: show unfold and distill buttons
         floatingControls.style("display", "flex");
         floatingControls.select("#floating-explore-btn").style("display", "none");
         floatingControls.select("#floating-unfold-less").style("display", "block");
         floatingControls.select("#floating-unfold-more").style("display", "block");
+        floatingControls.select("#floating-distill-btn").style("display", "block");
     } else if (state.pinnedNode) {
         // Node selected but not in proof mode: show explore button
         floatingControls.style("display", "flex");
@@ -155,6 +147,7 @@ export function updateFloatingControls(floatingControls, state) {
             .attr("data-node-id", state.pinnedNode.id);
         floatingControls.select("#floating-unfold-less").style("display", "none");
         floatingControls.select("#floating-unfold-more").style("display", "none");
+        floatingControls.select("#floating-distill-btn").style("display", "none");
     } else {
         // Nothing selected: hide everything
         floatingControls.style("display", "none");
