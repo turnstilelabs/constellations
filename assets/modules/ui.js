@@ -55,23 +55,9 @@ export function updateInfoPanel(infoPanel, infoTitle, infoBody, d, state, action
     // Title
     infoTitle.text(d.display_name);
 
-    // Centered Explore + Review buttons below the title
+    // Review button for theorems
     const reviewBtnHTML = (d.type === 'theorem') ? `<button id="review-theorem-btn" class="depth-btn">Review this Theorem</button>` : '';
-    const actionHTML = `
-        <div class="proof-action" style="gap:8px">
-            <button id="explore-proof-btn" class="depth-btn depth-btn--primary">Explore Proof Path</button>
-            ${reviewBtnHTML}
-        </div>`;
 
-    // Unfold controls directly below when in proof mode for this node
-    let controlsHTML = '';
-    if (state.proofMode && state.proofTargetId === d.id) {
-        controlsHTML = `
-        <div class="proof-controls-inline">
-            <button id="unfold-less-inline" class="depth-btn">< Unfold Less</button>
-            <button id="unfold-more-inline" class="depth-btn">Unfold More ></button>
-        </div>`;
-    }
     // Distiller activation button (only in Proof Path mode for this target)
     let distillHTML = '';
     if (state.proofMode && state.proofTargetId === d.id) {
@@ -81,7 +67,9 @@ export function updateInfoPanel(infoPanel, infoTitle, infoBody, d, state, action
         </div>`;
     }
 
-    let infoHTML = `${actionHTML}${controlsHTML}${distillHTML}<h4>Preview</h4><p class="math-content">${cleanLatex(d.content_preview || 'N/A')}</p>`;
+    const actionHTML = reviewBtnHTML ? `<div class="proof-action" style="gap:8px">${reviewBtnHTML}</div>` : '';
+
+    let infoHTML = `${actionHTML}${distillHTML}<h4>Preview</h4><p class="math-content">${cleanLatex(d.content_preview || 'N/A')}</p>`;
     if (d.prerequisites_preview) {
         infoHTML += `<h4>Prerequisites</h4><p class="math-content">${cleanLatex(d.prerequisites_preview)}</p>`;
     }
@@ -89,17 +77,9 @@ export function updateInfoPanel(infoPanel, infoTitle, infoBody, d, state, action
     infoBody.html(infoHTML);
     infoPanel.classed('visible', true);
 
-    // Wire explore button
-    d3.select('#explore-proof-btn').on('click', () => actions.enterProofMode(d.id));
     // Wire review button
     if (document.getElementById('review-theorem-btn')) {
         d3.select('#review-theorem-btn').on('click', () => actions.enterReviewMode(d.id));
-    }
-
-    // Wire inline controls if present
-    if (document.getElementById('unfold-less-inline')) {
-        d3.select('#unfold-less-inline').on('click', () => actions.unfoldLess());
-        d3.select('#unfold-more-inline').on('click', () => actions.unfoldMore());
     }
 
     // Wire Distiller button if present
