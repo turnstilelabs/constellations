@@ -428,7 +428,7 @@ body.visualization-page {
   font-size: 14px;
   pointer-events: none;
   max-width: 450px;
-  z-index: 1000;
+  z-index: 1100;
   line-height: 1.6;
   border: 1px solid var(--border-color);
 }
