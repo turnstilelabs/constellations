@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "description": "Interactive mathematical visualization tool",
   "scripts": {
-    "dev": "serve -p 3000",
-    "start": "serve -p 3000"
+    "dev": "http-server -p 3000",
+    "start": "http-server -p 3000"
   },
   "keywords": ["mathematics", "visualization", "d3"],
   "license": "MIT",
   "devDependencies": {
-    "serve": "^14.2.1"
+    "http-server": "^14.1.1"
   }
 }

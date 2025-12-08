@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sharp phase transition for the random-cluster and Potts models via decision trees</title>
+
+    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="stylesheet" href="../assets/review.css">
+    <link rel="icon" href="../assets/constellation_bg.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&display=swap"
+        rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                packages: { '[+]': ['ams'] },
+                macros: { bbE: '\\mathbb{E}', bbP: '\\mathbb{P}', bbZ: '\\mathbb{Z}', bbR: '\\mathbb{R}', bbG: '\\mathbb{G}', bbH: '\\mathbb{H}', bbV: '\\mathbb{V}', mathbbm: ['{\\mathbf{#1}}', 1], mathbbm1: '\\mathbf{1}', llbracket: '\\mathopen{[\\![}', rrbracket: '\\mathclose{]\\!]}' }
+            },
+            options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body class="visualization-page">
+    <div class="header">
+        <h1>Sharp phase transition for the random-cluster and Potts models via decision trees</h1>
+        <p class="authors">By Hugo Duminil-Copin, Aran Raoufi, Vincent Tassion | 1705.03104
+            <a href="https://arxiv.org/abs/1705.03104" target="_blank" title="View on arXiv" class="arxiv-link">
+                <svg class="arxiv-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M14.52 16.59L12.9 14.53L14.42 12.37L12.9 10.2L14.52 8.14L18.24 12.37M9.48 16.59L11.1 14.53L9.58 12.37L11.1 10.2L9.48 8.14L5.76 12.37M12 2A10 10 0 0 0 2 12A10 10 0 0 0 12 22A10 10 0 0 0 22 12A10 10 0 0 0 12 2Z">
+                    </path>
+                </svg>
+            </a>
+        </p>
+
+        <div class="stats">
+            <div class="stat"><strong>16</strong> artifacts</div>
+            <div class="stat"><strong>25</strong> dependencies</div>
+            <button id="btn-review-paper" class="depth-btn depth-btn--primary">Review</button>
+        </div>
+    </div>
+    <div class="graph-container">
+        <div class="controls">
+            <div class="legend-container">
+                <div class="legend" id="node-legend-container"></div>
+            </div>
+            <div class="legend-container">
+                <div class="legend" id="edge-legend-container"></div>
+            </div>
+        </div>
+        <svg id="graph"></svg>
+        <div id="info-panel">
+            <div class="info-header">
+                <h2 id="info-title"></h2>
+                <button class="close-btn" id="close-info-panel">&times;</button>
+            </div>
+            <div class="info-content" id="info-body"></div>
+        </div>
+    </div>
+    <div class="tooltip" id="tooltip" style="display: none;"></div>
+
+    <script>
+        // This is the ONLY part that changes for each paper.
+        window.graphData = {
+            "nodes": [
+                { "id": "theorem-1-8adf0c", "type": "theorem", "content_preview": "Fix an increasing function $f:\\{0,1\\}^E\\longrightarrow [0,1]$ on a finite set $E$. For any monotonic measure $\\mu$ and any decision tree $T$,  $\\begin{equation} \\mathrm{Var}_\\mu(f)~\\le~   ...\\end{equation}$", "prerequisites_preview": "$E$: Consider a finite set $E$ of cardinality $n$.\n\n$\\mu$: A \\emph{monotonic} measure is a measure $\\mu$ on ${0,1}^{E}$ such that for any $e \\in E$, any $F \\subset E$, and any $\\xi,\\zeta \\in {0,1}^{F}$ satisfying $\\xi \\le  \\zeta $, $\\mu[\\omega_e=\\xi_e,\\forall e \\in F]>0$ and  $\\mu[\\omega_e=\\zeta_e,\\forall e \\in F]>0$,   $$\\mu[\\omega_e=1 :|: \\omega_e=\\xi_e,\\forall e \\in F] \\le \\mu[\\omega_e=1 :|: \\omega_e=\\zeta_e,\\forall e \\in F].$$ \n\n$\\omega$: A decision tree associated to a Boolean function $f$ takes $\\omega\\in\\{0,1\\}^n$ as an input, and reveals algorithmically the value of $\\omega$ in different bits one by one.\n\ndecision tree: To start with a more tractable problem, computer scientists have studied \\emph{decision trees}, which are simpler models of computation. A decision tree associated to a Boolean function $f$ takes $\\omega\\in\\{0,1\\}^n$ as an input, and reveals algorithmically the value of $\\omega$ in different bits one by one.\n\nrevealment: When $\\tau$ is taken to be the time at which $f$ is determined, the $\\tau$-revealment simply corresponds to the standard notion of revealment associated to a random decision tree.", "display_name": "Theorem 1.1", "label": "thm:OSSS" },
+                { "id": "theorem-2-9c9e2e", "type": "theorem", "content_preview": "Fix $q \\geq 1$ and consider the random-cluster model on a weighted lattice $(\\bbG, J)$.\nThen,\n- There exists $c>0$ such that $\\theta(\\beta)\\ge c(\\beta-\\beta_c)$ for any $\\beta \\ge \\beta_c$ close enough to $\\beta_c$.\n- For any $\\beta<\\beta_c$ there exists $c_\\beta>0$ such that for every $n\\ge0$,\n$$\\phi_{\\Lambda_n,\\beta,q}^{\\rm w}[0\\longleftrightarrow \\partial\\Lambda_n]\\le \\exp[-c_\\beta n].$$", "prerequisites_preview": "$J$: Introduce a family of \\emph{non-negative} coupling constants $J=(J_{xy})_{xy\\in \\bbE}\\in[0,\\infty)^\\bbE$ which is non-zero and invariant under a group acting transitively on $\\bbV$.\n\n$\\Lambda_n$: Finally, let $\\Lambda_n$ be the box of size $n$ around $0$ for the graph distance.\n\nweighted lattice: Introduce a family of \\emph{non-negative} coupling constants $J=(J_{xy})_{xy\bbE} [0,\\infty)^E$ which is non-zero and invariant under a group acting transitively on $V$. Notice that the coupling constants are necessarily finite-range (since the graph is locally finite). We call the pair $(\\bbG,J)$ a \\emph{weighted lattice}.", "display_name": "Theorem 1.2", "label": "thm:RCM" },
+                { "id": "theorem-3-e7e3ea", "type": "theorem", "content_preview": "Fix $q\\ge1$. If $y_c:=p_c/(1-p_c)$, we have  $$\\begin{array}{ll}\ny_c^2-q=0&\\text{on the square lattice,} \\\\\ny_c^3+3y_c^2-q=0  & \\text{on the triangular lattice,}\\\\\ny_c^3-3qy_c-q^2=0 & \\text{on the hexagonal lattice.}\\end{array}$$", "prerequisites_preview": "", "display_name": "Theorem 1.3", "label": "thm:planarRCM" },
+                { "id": "theorem-4-f84e6f", "type": "theorem", "content_preview": "Fix $q\\ge1$ and a planar locally-finite doubly periodic graph $\\bbG$. We have  \n\\begin{equation}\\frac{p_c(\\bbG)p_c(\\bbG^*)}{(1-p_c(\\bbG))(1-p_c(\\bbG^*))}= q.\\end{equation}", "prerequisites_preview": "", "display_name": "Theorem 1.4", "label": "thm:dualRCM" },
+                { "id": "theorem-5-ff5a6d", "type": "theorem", "content_preview": "There does not exist any translational invariant measure $\\mu$ on a planar locally-finite doubly periodic graph  $\\bbG$ satisfying:\n- {\\em (FKG)} For any increasing events $A$ and $B$,\n$\\mu(A\\cap B)\\ge \\mu(A)\\mu(B)$.\n- Almost surely, there exists a unique infinite connected component in $\\omega$ and in $\\omega^*$.", "prerequisites_preview": "$\\mu$: A \\emph{monotonic} measure is a measure $\\mu$ on ${0,1}^{E}$ such that for any $e \\in E$, any $F \\subset E$, and any $\\xi,\\zeta \\in {0,1}^{F}$ satisfying $\\xi \\le  \\zeta $, $\\mu[\\omega_e=\\xi_e,\\forall e \\in F]>0$ and  $\\mu[\\omega_e=\\zeta_e,\\forall e \\in F]>0$,   $$\\mu[\\omega_e=1 :|: \\omega_e=\\xi_e,\\forall e \\in F] \\le \\mu[\\omega_e=1 :|: \\omega_e=\\zeta_e,\\forall e \\in F].$$ \n\n$\\omega$: A decision tree associated to a Boolean function $f$ takes $\\omega\\in\\{0,1\\}^n$ as an input, and reveals algorithmically the value of $\\omega$ in different bits one by one.\n\n$\\omega^*$: For a configuration $\\omega$ on $\\bbG$, define a configuration $\\omega^*$ in $\\bbG^*$ by the formula $\\omega^*_{e^*}=1-\\omega_e$ for every edge $e$ of $\\bbG$, where $e^*$ is the edge of $\\bbG^*$ between the two vertices of $\\bbG^*$ corresponding to the faces bordered by $e$.", "display_name": "Theorem 1.5", "label": "thm:dual" },
+                { "id": "theorem-6-38ae21", "type": "theorem", "content_preview": "Fix an integer $q\\ge2$ and consider the $q$-state Potts on a weighted lattice $(\\bbG,J)$. Then, for $\\beta<\\beta_c$,  there exists $c_\\beta>0$ such that for every $x\\in\\bbV$,\n$$0\\le\\mathbb P^\\nu_{\\Lambda_n,\\beta,q}[\\sigma_0=\\nu]-\\tfrac1q\\le \\exp[-c_\\beta n].$$", "prerequisites_preview": "$J$: Introduce a family of \\emph{non-negative} coupling constants $J=(J_{xy})_{xy\\in \\bbE}\\in[0,\\infty)^\\bbE$ which is non-zero and invariant under a group acting transitively on $\\bbV$.\n\n$\\Lambda_n$: Finally, let $\\Lambda_n$ be the box of size $n$ around $0$ for the graph distance.\n\nweighted lattice: Introduce a family of \\emph{non-negative} coupling constants $J=(J_{xy})_{xy\bbE} [0,\\infty)^E$ which is non-zero and invariant under a group acting transitively on $V$. Notice that the coupling constants are necessarily finite-range (since the graph is locally finite). We call the pair $(\\bbG,J)$ a \\emph{weighted lattice}.\n\n$\\nu$: For $G=(V,E)$ a finite subgraph of a weighted lattice $(\\bbG, J)$, $\\nu \\in \\{1, \\dots, q\\}$, and $\\beta\\ge0$, the {\\em $q$-state Potts measure} with boundary condition $\\nu$ is defined for any $\\sigma=(\\sigma_x)_{x\\in V}\\in \\{1,\\dots,q\\}^V$ by\n$$ \\mathbb P^{\\nu}_{G,\\beta,q}[\\sigma]~:=~\\frac{\\displaystyle \\exp  ( -\\beta H^\\nu_{G,q}(\\sigma) )}{\\displaystyle\\sum_{\\sigma'\\in\\{1,\\dots,q\\}^V}\\exp  ( -\\beta H^\\nu_{G,q}(\\sigma) )}$$ \n\n$q$-state Potts: The Potts model \\cite{Pot52} is one of the most fundamental example of a lattice spin model undergoing an order/disorder phase transition at a critical parameter $\\beta_c$. It generalizes the Ising model by allowing the spins to take one of $q$ values.", "display_name": "Theorem 1.6", "label": "thm:Potts" },
+                { "id": "lemma-7-be03cd", "type": "lemma", "content_preview": "Let $\\U$ be a iid sequence of uniform $[0,1]$ random variables, and $\\e$ a random variable taking values in $\\vec E$. Assume that for every $1\\le t\\le n$, $\\U_t$ is independent of $(\\e_{[t]},\\U_{[t-1]})$, then...", "prerequisites_preview": "", "display_name": "Lemma 2.1", "label": "lem:01" },
+                { "id": "remark-8-5102da", "type": "remark", "content_preview": "For most applications, one may replace covariances in the OSSS inequality by influences $I_e[f]:=\\mu (f|\\omega_e=1)-\\mu(f|\\omega_e=0)$ (we chose not to do so since applications in statistical physics to long-range models would for instance...", "prerequisites_preview": "$E$: Consider a finite set $E$ of cardinality $n$.\n\n$\\mu$: A \\emph{monotonic} measure is a measure $\\mu$ on ${0,1}^{E}$ such that for any $e \\in E$, any $F \\subset E$, and any $\\xi,\\zeta \\in {0,1}^{F}$ satisfying $\\xi \\le  \\zeta $, $\\mu[\\omega_e=\\xi_e,\\forall e \\in F]>0$ and  $\\mu[\\omega_e=\\zeta_e,\\forall e \\in F]>0$,   $$\\mu[\\omega_e=1 :|: \\omega_e=\\xi_e,\\forall e \\in F] \\le \\mu[\\omega_e=1 :|: \\omega_e=\\zeta_e,\\forall e \\in F].$$ \n\n$\\omega$: A decision tree associated to a Boolean function $f$ takes $\\omega\\in\\{0,1\\}^n$ as an input, and reveals algorithmically the value of $\\omega$ in different bits one by one.\n\n$F_e(u)$: For $u\\in[0,1]^n$ and $e\\in \\vec E$, define $F_e(u)=x$ inductively for $1\\le t\\le n$ by\n   \\begin{equation}\\label{eq:ccc}x_{e_t}:=\\begin{cases} 1&\\text{ if }u_{t}\\ge\\mu[\\omega_{e_{t}}=0\\,|\\,\\omega_{e_{[t-1]}}=x_{e_{[t-1]}}],\\\\   0&\\text{ otherwise}.\\end{cases}\\end{equation}\n\n$\\mathbb E$: Write $\\mathbb P$ for the coupling between these variables (and $\\mathbb E$ for its expectation).", "display_name": "Remark 2.2", "label": null },
+                { "id": "remark-9-12ecba", "type": "remark", "content_preview": "Note that for the trivial decision tree discovering all the edges, for every edge the revealment is equal to 1 . As a consequence, we recover (in a very convoluted way) the discrete Poincar\\'e inequality...", "prerequisites_preview": "$E$: Consider a finite set $E$ of cardinality $n$.\n\ndecision tree: To start with a more tractable problem, computer scientists have studied \\emph{decision trees}, which are simpler models of computation. A decision tree associated to a Boolean function $f$ takes $\\omega\\in\\{0,1\\}^n$ as an input, and reveals algorithmically the value of $\\omega$ in different bits one by one.\n\nrevealment: When $\\tau$ is taken to be the time at which $f$ is determined, the $\\tau$-revealment simply corresponds to the standard notion of revealment associated to a random decision tree.", "display_name": "Remark 2.3", "label": "eq:poincare" },
+                { "id": "remark-10-d4014e", "type": "remark", "content_preview": "The proof of the previous statement can be extended in a trivial way as follows. First, we may consider countable sets $E$ by using a very simple martingale argument. Second, we may consider that $\\tau$ is an arbitrary stopping time (with respect...", "prerequisites_preview": "$E$: Consider a finite set $E$ of cardinality $n$.\n\n$\\mu$: A \\emph{monotonic} measure is a measure $\\mu$ on ${0,1}^{E}$ such that for any $e \\in E$, any $F \\subset E$, and any $\\xi,\\zeta \\in {0,1}^{F}$ satisfying $\\xi \\le  \\zeta $, $\\mu[\\omega_e=\\xi_e,\\forall e \\in F]>0$ and  $\\mu[\\omega_e=\\zeta_e,\\forall e \\in F]>0$,   $$\\mu[\\omega_e=1 :|: \\omega_e=\\xi_e,\\forall e \\in F] \\le \\mu[\\omega_e=1 :|: \\omega_e=\\zeta_e,\\forall e \\in F].$$", "display_name": "Remark 2.4", "label": null },
+                { "id": "theorem-11-b23168", "type": "theorem", "content_preview": "Fix a countable set $E$ and an increasing function $f:\\{0,1\\}^E\\longrightarrow [-1,1]$. For any monotonic measure $\\mu$ on $\\{0,1\\}^E$, any decision tree $T$ and any stopping time $\\tau$,  \\begin{equation}...\n\\end{equation}", "prerequisites_preview": "$E$: Consider a finite set $E$ of cardinality $n$.\n\n$\\mu$: A \\emph{monotonic} measure is a measure $\\mu$ on ${0,1}^{E}$ such that for any $e \\in E$, any $F \\subset E$, and any $\\xi,\\zeta \\in {0,1}^{F}$ satisfying $\\xi \\le  \\zeta $, $\\mu[\\omega_e=\\xi_e,\\forall e \\in F]>0$ and  $\\mu[\\omega_e=\\zeta_e,\\forall e \\in F]>0$,   $$\\mu[\\omega_e=1 :|: \\omega_e=\\xi_e,\\forall e \\in F] \\le \\mu[\\omega_e=1 :|: \\omega_e=\\zeta_e,\\forall e \\in F].$$ \n\ndecision tree: To start with a more tractable problem, computer scientists have studied \\emph{decision trees}, which are simpler models of computation. A decision tree associated to a Boolean function $f$ takes $\\omega\\in\\{0,1\\}^n$ as an input, and reveals algorithmically the value of $\\omega$ in different bits one by one.", "display_name": "Theorem 2.5", "label": "eq:OSSS2" },
+                { "id": "lemma-12-5f7f28", "type": "lemma", "content_preview": "Consider a converging sequence of increasing differentiable functions $f_n:[0,\\beta_0]\\rightarrow [0,M]$ satisfying\n \\begin{equation}f_n'\\ge \\frac{n}{\\Sigma_{n}}f_n\n \\end{equation}\n for all... ", "prerequisites_preview": "", "display_name": "Lemma 3.1", "label": "lem:technical" },
+                { "id": "lemma-13-bf8b5f", "type": "lemma", "content_preview": "Consider a finite graph $G=(V,E)$ containing $0$. For any monotonic measure $\\mu$ on $\\{0,1\\}^E$ and any $n\\ge1$, one has\n$$\\sum_{xy\\in E} {\\rm Cov}_\\mu(\\mathbbm...$$", "prerequisites_preview": "$E$: Consider a finite set $E$ of cardinality $n$.\n\n$\\mu$: A \\emph{monotonic} measure is a measure $\\mu$ on ${0,1}^{E}$ such that for any $e \\in E$, any $F \\subset E$, and any $\\xi,\\zeta \\in {0,1}^{F}$ satisfying $\\xi \\le  \\zeta $, $\\mu[\\omega_e=\\xi_e,\\forall e \\in F]>0$ and  $\\mu[\\omega_e=\\zeta_e,\\forall e \\in F]>0$,   $$\\mu[\\omega_e=1 :|: \\omega_e=\\xi_e,\\forall e \\in F] \\le \\mu[\\omega_e=1 :|: \\omega_e=\\zeta_e,\\forall e \\in F].$$ \n\n$\\Lambda_n$: Finally, let $\\Lambda_n$ be the box of size $n$ around $0$ for the graph distance.", "display_name": "Lemma 3.2", "label": "cor:OSSS" },
+                { "id": "remark-14-c6c568", "type": "remark", "content_preview": "Note that $\\tau$ may a priori be strictly smaller than the last time we are in first case (since the decision tree may discover a path of open edges from 0 to $\\partial \\Lambda_n$ or a family of closed edges disconnecting the origin from...", "prerequisites_preview": "decision tree: To start with a more tractable problem, computer scientists have studied \\emph{decision trees}, which are simpler models of computation. A decision tree associated to a Boolean function $f$ takes $\\omega\\in\\{0,1\\}^n$ as an input, and reveals algorithmically the value of $\\omega$ in different bits one by one.\n\n$\\Lambda_n$: Finally, let $\\Lambda_n$ be the box of size $n$ around $0$ for the graph distance.", "display_name": "Remark 3.3", "label": null },
+                { "id": "lemma-15-e0712e", "type": "lemma", "content_preview": "Assume that both $\\omega$ and $\\omega^*$ contain a unique infinite connected components almost surely. Then, as $\\min\\{n,k\\}$ tends to infinity,\n- $\\max\\big\\{h(n,k),v(n,k+1)\\big\\}$ tends to 1,\n- $\\min\\big\\{v(n,k),h(n,k)\\}$ tends to 0.", "prerequisites_preview": "$\\omega$: A decision tree associated to a Boolean function $f$ takes $\\omega\\in\\{0,1\\}^n$ as an input, and reveals algorithmically the value of $\\omega$ in different bits one by one.\n\n$\\omega^*$: For a configuration $\\omega$ on $\\bbG$, define a configuration $\\omega^*$ in $\\bbG^*$ by the formula $\\omega^*_{e^*}=1-\\omega_e$ for every edge $e$ of $\\bbG$, where $e^*$ is the edge of $\\bbG^*$ between the two vertices of $\\bbG^*$ corresponding to the faces bordered by $e$.", "display_name": "Lemma 4.1", "label": "lem:hg" },
+                { "id": "external_Gri06", "type": "unknown", "display_name": "Reference [Gri06]", "label": "Gri06" }
+            ],
+            "edges": [
+                { "source": "theorem-1-8adf0c", "target": "lemma-7-be03cd", "type": "internal", "dependency_type": "uses_result", "context": "{W} ^t$ is equal to $\\V$ if $t\\ge \\tau$).   Lemma~\\ref{lem:01} applied to $(\\U,\\e)$ gives that $\\X$ has law $\\mu" },
+                { "source": "theorem-2-9c9e2e", "target": "external_Gri06", "type": "external", "dependency_type": "uses_result", "context": "$ Now, the comparison between boundary conditions \\cite[Lemma 4.14]{Gri06} together with the facts that $\\Lambda_{2k}(x)\\sub" },
+                { "source": "theorem-2-9c9e2e", "target": "lemma-13-bf8b5f", "type": "internal", "dependency_type": "uses_result", "context": "_n$ is monotonic \\cite[Theorem 3.8]{Gri06}, Lemma~\\ref{cor:OSSS} (applied to the graph $G=(\\Lambda_{2n},E)$ induce" },
+                { "source": "theorem-2-9c9e2e", "target": "lemma-12-5f7f28", "type": "internal", "dependency_type": "uses_result", "context": ") so that $\\theta_n$ converges to $\\theta$. Lemma~\\ref{lem:technical} applied to $f_n=\\theta_n/c$ gives the existence o" },
+                { "source": "theorem-4-f84e6f", "target": "external_Gri06", "type": "external", "dependency_type": "uses_result", "context": "$\\omega^*_{e^*}=1-\\omega_e$, then the  duality  \\cite[Theorem 6.13]{Gri06} for random-cluster models states that $\\omega^*$" },
+                { "source": "theorem-4-f84e6f", "target": "theorem-2-9c9e2e", "type": "internal", "dependency_type": "uses_result", "context": "(\\bbG)^*=p_c(\\bbG^*)$. The second item of Theorem~\\ref{thm:RCM}, for quasi-transitive graphs, implies that for an" },
+                { "source": "theorem-4-f84e6f", "target": "theorem-5-ff5a6d", "type": "internal", "dependency_type": "uses_result", "context": "cted component almost surely). Therefore, Theorem~\\ref{thm:dual} shows that $p>p_c(\\bbG)$ implies $p^*\\le p_c(\\bbG" },
+                { "source": "remark-8-5102da", "target": "lemma-7-be03cd", "type": "internal", "dependency_type": "uses_result", "context": "$\\mathbf W$ is independent of $\\U_{[t-1]}$. Lemma~\\ref{lem:01} and the fact that $f$ is increasing give us  $$ \\" },
+                { "source": "lemma-13-bf8b5f", "target": "theorem-1-8adf0c", "type": "internal", "dependency_type": "uses_result", "context": "obtain the target inequality by applying Theorem~\\ref{thm:OSSS} for each $k$ and then summing on $k$. As a key, w" },
+                { "source": "lemma-13-bf8b5f", "target": "theorem-11-b23168", "type": "uses_result", "dependency_type": "uses_result" },
+                { "source": "remark-10-d4014e", "target": "theorem-1-8adf0c", "type": "is_generalization_of", "dependency_type": "is_generalization_of" },
+                { "source": "theorem-6-38ae21", "target": "theorem-4-f84e6f", "type": "uses_result", "dependency_type": "uses_result" },
+                { "source": "remark-14-c6c568", "target": "theorem-1-8adf0c", "type": "uses_definition", "dependency_type": "uses_definition" },
+                { "source": "remark-9-12ecba", "target": "theorem-1-8adf0c", "type": "is_corollary_of", "dependency_type": "is_corollary_of" },
+                { "source": "remark-14-c6c568", "target": "lemma-13-bf8b5f", "type": "uses_definition", "dependency_type": "uses_definition" },
+                { "source": "theorem-6-38ae21", "target": "theorem-2-9c9e2e", "type": "is_corollary_of", "dependency_type": "is_corollary_of" },
+                { "source": "remark-10-d4014e", "target": "remark-8-5102da", "type": "is_generalization_of", "dependency_type": "is_generalization_of" },
+                { "source": "theorem-11-b23168", "target": "remark-10-d4014e", "type": "is_corollary_of", "dependency_type": "is_corollary_of" },
+                { "source": "remark-14-c6c568", "target": "theorem-2-9c9e2e", "type": "provides_remark", "dependency_type": "provides_remark" },
+                { "source": "remark-8-5102da", "target": "theorem-1-8adf0c", "type": "uses_result", "dependency_type": "uses_result" },
+                { "source": "remark-14-c6c568", "target": "theorem-11-b23168", "type": "uses_definition", "dependency_type": "uses_definition" },
+                { "source": "theorem-11-b23168", "target": "remark-9-12ecba", "type": "is_generalization_of", "dependency_type": "is_generalization_of" },
+                { "source": "theorem-11-b23168", "target": "theorem-1-8adf0c", "type": "is_generalization_of", "dependency_type": "is_generalization_of" },
+                { "source": "remark-14-c6c568", "target": "remark-10-d4014e", "type": "uses_definition", "dependency_type": "uses_definition" },
+                { "source": "remark-10-d4014e", "target": "lemma-7-be03cd", "type": "uses_result", "dependency_type": "uses_result" }
+            ]
+        };
+    </script>
+    <!-- Link to the shared JavaScript file -->
+    <script type="module" src="../assets/modules/main.js"></script>
+</body>
+
+</html>
