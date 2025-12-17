@@ -243,78 +243,285 @@ export function renderDistilledWindow(model) {
 
   const bootSrc = new URL('../assets/distilled_boot.js', window.location.href).href;
   const explainerSrc = new URL('../assets/explainer.js', window.location.href).href;
+  const themeCss = new URL('../assets/style.css', window.location.href).href;
+
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Distilled Proof for: ${title}</title>
+
+<!-- Reuse the same black/yellow theme as the rest of the app -->
+<link rel="stylesheet" href="${themeCss}" />
+
 <style>
-  :root {
-    --ink: #111;
-    --paper: #fff;
-    --muted: #666;
-    --accent: #0a6efd;
+  /* Mark this page as a visualization page so all shared theme rules apply */
+  body { padding: 0 !important; }
+
+  /* Distilled doc layout */
+  .doc {
+    max-width: 980px;
+    margin: 20px auto;
+    padding: 0 18px 60px;
   }
-  html, body { background: var(--paper); color: var(--ink); margin: 0; padding: 0; font-family: 'Source Serif 4', Georgia, serif; }
-  .doc { max-width: 900px; margin: 24px auto; padding: 0 18px 60px; }
-  header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #ddd; padding-bottom: 12px; margin-bottom: 20px; }
-  header h1 { font-family: 'Inter', system-ui, sans-serif; font-size: 20px; margin: 0; }
-  header .actions { display: flex; gap: 10px; }
-  .download-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-family: 'Inter', system-ui, sans-serif; font-weight: 600; }
-  .download-btn:hover { filter: brightness(0.95); }
-  .download-btn .icon svg { width: 18px; height: 18px; display: block; }
-  section { margin: 26px 0; }
-  section h2 { font-family: 'Inter', system-ui, sans-serif; font-size: 18px; border-bottom: 1px solid #eee; padding-bottom: 6px; }
-  h3 { font-family: 'Inter', system-ui, sans-serif; font-size: 16px; margin-bottom: 6px; }
-  .muted { color: var(--muted); font-style: italic; }
-  .result-item, .def-item, .target-item { margin: 14px 0; }
-  .math-content { line-height: 1.6; }
+
+  .dp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--surface1);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+  }
+
+  .dp-header h1 {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 18px;
+    margin: 0;
+    color: var(--accent);
+  }
+
+  .dp-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* Reuse existing button styles from visualization pages */
+  .dp-actions .depth-btn { display: inline-flex; align-items: center; gap: 6px; }
+  .dp-actions .icon svg { width: 18px; height: 18px; display: block; }
+
+  section {
+    margin: 18px 0;
+    background: var(--surface1);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+
+  section h2 {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 16px;
+    margin: 0 0 10px;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+  }
+
+  h3 {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    margin: 0 0 6px;
+    color: var(--primary-text);
+  }
+
+  .muted { color: var(--secondary-text); font-style: italic; }
+  .result-item, .def-item, .target-item { margin: 12px 0; }
+  .math-content { line-height: 1.65; color: var(--primary-text); }
+
   /* Ensure math and its containers are selectable */
   .math-content, .math-content * { -webkit-user-select: text; user-select: text; }
   mjx-container, mjx-container * { -webkit-user-select: text; user-select: text; }
+
   /* Distilled proof controls and layout */
-  .result-item .child-results { margin-left: 16px; border-left: 2px solid #eee; padding-left: 12px; }
+  .result-item .child-results {
+    margin-left: 16px;
+    border-left: 2px solid var(--border-color);
+    padding-left: 12px;
+  }
   .result-item.collapsed > .child-results { display: none; }
   .artifact-controls { display: inline-flex; gap: 6px; margin-left: 8px; vertical-align: middle; }
-  .fold-btn { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border: 1px solid #ccc; border-radius: 4px; background: #f8f8f8; cursor: pointer; font-weight: 700; line-height: 1; color: #333; }
-  .fold-btn:hover { background: #eee; }
+
+  .fold-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--surface2);
+    cursor: pointer;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--primary-text);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .fold-btn:hover { background: var(--surface1); }
+
   /* Explainer UI */
-  .explainer-menu { position: fixed; display: none; background: #fff; color: #111; border: 1px solid #ddd; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 6px; z-index: 2000; min-width: 220px; }
-  .explainer-menu button { display: block; width: 100%; text-align: left; background: #fff; border: none; padding: 8px 10px; cursor: pointer; border-radius: 4px; font-family: 'Inter', system-ui, sans-serif; }
-  .explainer-menu button:hover { background: #f2f2f2; }
-  .explainer-card { background: #fafafa; border: 1px solid #e5e5e5; border-radius: 6px; padding: 10px; margin: 10px 0; }
-  .explainer-card header { display: flex; align-items: center; justify-content: space-between; font-family: 'Inter', system-ui, sans-serif; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+  .explainer-menu {
+    position: fixed;
+    display: none;
+    background: var(--surface2);
+    color: var(--primary-text);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    padding: 6px;
+    z-index: 2000;
+    min-width: 220px;
+  }
+  .explainer-menu button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 8px 10px;
+    cursor: pointer;
+    border-radius: 6px;
+    color: var(--primary-text);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .explainer-menu button:hover {
+    background: var(--surface1);
+    border-color: var(--border-color);
+  }
+
+  .explainer-card {
+    background: var(--surface2);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0;
+  }
+  .explainer-card header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 6px;
+  }
   .explainer-card header .actions button { margin-left: 6px; font-size: 12px; }
-  .key-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); align-items: center; justify-content: center; z-index: 2001; }
-  .key-modal .dialog { background: #fff; color: #111; width: 360px; max-width: 92vw; border-radius: 8px; padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
-  .key-modal .dialog h3 { margin: 0 0 10px; font-family: 'Inter', system-ui, sans-serif; font-size: 16px; }
-  .key-modal .dialog input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
-  .key-modal .dialog .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
-  /* Overlay layers for pins and highlights */
+
+  .key-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    align-items: center;
+    justify-content: center;
+    z-index: 2001;
+  }
+  .key-modal .dialog {
+    background: var(--surface1);
+    color: var(--primary-text);
+    width: 380px;
+    max-width: 92vw;
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  }
+  .key-modal .dialog h3 {
+    margin: 0 0 10px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    color: var(--accent);
+  }
+  .key-modal .dialog input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--surface2);
+    color: var(--primary-text);
+  }
+  .key-modal .dialog .actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+
+  /* Overlay layers for pins and highlights (already matches theme) */
   .overlay-layer { position: fixed; inset: 0; pointer-events: none; z-index: 1500; }
   .highlight-rect { position: fixed; background: rgba(255, 221, 87, 0.35); outline: 1px solid #ffd94a; border-radius: 2px; }
   #pin-layer { position: fixed; inset: 0; pointer-events: none; z-index: 1501; }
   .pin { position: fixed; width: 18px; height: 18px; border-radius: 50%; background: #ffd94a; border: 1px solid #caa500; box-shadow: 0 1px 2px rgba(0,0,0,0.2); pointer-events: auto; cursor: pointer; }
 
   /* Right-side comment panel */
-  .comment-panel { position: fixed; top: 0; right: 0; width: 360px; height: 100vh; background: #fff; color: #111; border-left: 1px solid #ddd; transform: translateX(100%); transition: transform 200ms ease; z-index: 1600; display: flex; flex-direction: column; }
+  .comment-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 360px;
+    height: 100vh;
+    background: var(--surface2);
+    color: var(--primary-text);
+    border-left: 1px solid var(--border-color);
+    transform: translateX(100%);
+    transition: transform 200ms ease;
+    z-index: 1600;
+    display: flex;
+    flex-direction: column;
+  }
   .comment-panel.open { transform: translateX(0); }
-  .comment-panel header { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid #eee; font-family: 'Inter', system-ui, sans-serif; font-weight: 600; }
-  .comment-panel header .close { font-size: 22px; border: none; background: none; cursor: pointer; }
+  .comment-panel header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .comment-panel header .close {
+    font-size: 22px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--secondary-text);
+  }
+  .comment-panel header .close:hover { color: var(--primary-text); }
+
   .threads { overflow: auto; padding: 10px; flex: 1; }
-  .thread-card { border: 1px solid #eee; border-radius: 6px; padding: 8px; margin-bottom: 10px; background: #fafafa; }
-  .thread-card.active { outline: 2px solid #ffd94a; background: #fffde7; }
-  .thread-card header { display: flex; align-items: center; justify-content: space-between; font-family: 'Inter', system-ui, sans-serif; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
-  .thread-card header .actions .icon-btn { width: 24px; height: 24px; border: none; background: none; cursor: pointer; font-size: 18px; line-height: 1; color: #666; border-radius: 4px; }
-  .thread-card header .actions .icon-btn:hover { background: #f2f2f2; color: #333; }
+  .thread-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 10px;
+    background: var(--surface1);
+  }
+  .thread-card.active { outline: 2px solid var(--accent); }
+  .thread-card header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: var(--primary-text);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 6px;
+  }
+  .thread-card header .actions .icon-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    color: var(--secondary-text);
+    border-radius: 4px;
+  }
+  .thread-card header .actions .icon-btn:hover { background: var(--surface2); color: var(--primary-text); }
   .thread-card .content { max-height: 320px; overflow: auto; }
 
   @media print {
-    header .actions { display: none; }
+    .dp-actions { display: none; }
     a { color: inherit; text-decoration: none; }
   }
 </style>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
@@ -332,16 +539,16 @@ export function renderDistilledWindow(model) {
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 </head>
-<body>
+<body class="visualization-page">
 <div class="doc">
-  <header>
+  <header class="dp-header">
     <h1>Distilled Proof: ${title}</h1>
-    <div class="actions">
-      <button id="download-tex" class="download-btn">
+    <div class="dp-actions">
+      <button id="download-tex" class="depth-btn depth-btn--primary">
         <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M7.5 10.5l4.5 4.5 4.5-4.5M12 3v12"/></svg></span>
         Download LaTeX
       </button>
-      <button id="set-api-key" class="download-btn" title="Set OpenAI API key">
+      <button id="set-api-key" class="depth-btn" title="Set OpenAI API key">
         <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9.75 3a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75v1.086a7.5 7.5 0 0 1 3.034 1.257l.768-.768a.75.75 0 0 1 1.06 0l2.122 2.122a.75.75 0 0 1 0 1.06l-.768.768A7.5 7.5 0 0 1 21.914 11.25H23a.75.75 0 0 1 .75.75v3A.75.75 0 0 1 23 15.75h-1.086a7.5 7.5 0 0 1-1.257 3.034l.768.768a.75.75 0 0 1 0 1.06l-2.122 2.122a.75.75 0 0 1-1.06 0l-.768-.768A7.5 7.5 0 0 1 14.25 21.914V23a.75.75 0 0 1-.75.75h-3A.75.75 0 0 1 9.75 23v-1.086a7.5 7.5 0 0 1-3.034-1.257l-.768.768a.75.75 0 0 1 0 1.06l-2.122 2.122a.75.75 0 0 1-1.06 0l-.768-.768A7.5 7.5 0 0 1 2.086 14.25H1a.75.75 0 0 1-.75-.75v-3A.75.75 0 0 1 1 9.75h1.086a7.5 7.5 0 0 1 1.257-3.034l-.768-.768a.75.75 0 0 1 0-1.06L4.697 2.766a.75.75 0 0 1 1.06 0l.768.768A7.5 7.5 0 0 1 9.75 4.086V3zM12 8.25a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5z"/></svg></span>
         AI Key
       </button>
@@ -383,8 +590,8 @@ export function renderDistilledWindow(model) {
     <h3>Set OpenAI API key</h3>
     <input id="key-input" type="password" placeholder="sk-..." />
     <div class="actions">
-      <button id="key-cancel">Cancel</button>
-      <button id="key-save">Save</button>
+      <button id="key-cancel" class="depth-btn">Cancel</button>
+      <button id="key-save" class="depth-btn depth-btn--primary">Save</button>
     </div>
   </div>
 </div>
@@ -393,11 +600,11 @@ export function renderDistilledWindow(model) {
 </body>
 </html>`;
 
-  const win = window.open('', '_blank');
-  if (win) {
-    win.document.write(html);
-    win.document.close();
-  } else {
-    alert('Please allow popups to view the distilled proof.');
-  }
+  // Prefer a new tab/window, but if popups are blocked fall back to rendering
+  // in the current tab (still lets users access the distilled proof).
+  let win = window.open('', '_blank');
+  if (!win) win = window;
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
 }
