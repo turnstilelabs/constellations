@@ -68,18 +68,6 @@ The included example constellation page (`1705.03104/index.html`) defines `windo
 - `nodes`: `{ id, type, display_name, content_preview, prerequisites_preview, ... }`
 - `edges`: `{ source, target, dependency_type, context, ... }`
 
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Code of Conduct
-
-See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
-
-## Security
-
-See [SECURITY.md](SECURITY.md).
-
 ## License
 
 MIT © Turnstile Labs — see [LICENSE](LICENSE).
