@@ -1,52 +1,85 @@
-This project transforms mathematical papers into interactive visualizations, illuminating the intricate logical structure that underpins the research. Each paper is rendered as a "constellation," where theorems, lemmas, and remarks are the stars, and their dependencies are the lines that connect them.
-The goal is to provide a new way to explore, understand, and appreciate the architecture of mathematical papers.
+# Constellations
+
+Transform mathematical papers into interactive visualizations that illuminate the logical structure underpinning the research.
+
+Each paper is rendered as a **constellation**:
+- theorems, lemmas, definitions, and remarks are the **stars**
+- logical dependencies are the **edges** between them
+
+> Status: **research prototype / experimental**
+
+## Demo
+
+- Landing page: `http://localhost:3000/`
+- Example constellation: `http://localhost:3000/1705.03104/`
 
 ## Features
 
-This graph visualization tool is built with D3.js and packed with features to make exploring a paper's structure intuitive and insightful:
+- **Interactive graph** (D3): pan/zoom and drag nodes
+- **Dynamic node sizing** based on connectivity
+- **Typed dependency edges** (normalized for readability)
+- **Focus mode**: select a node to isolate its neighborhood
+- **Info panel**: read an artifact’s preview and prerequisites
+- **Legend filters**: toggle node types to declutter
+- **Proof Path Explorer**: expand/collapse prerequisite depth
+- **Review mode** (prototype): guided review of theorems
 
-- Interactive Graph: Pan and zoom the graph, and drag nodes to rearrange the layout.
+## Quickstart
 
-- Dynamic Node Sizing: Nodes are sized based on their number of connections, highlighting the most central and influential artifacts in the paper.
+### Prerequisites
 
-- Colored Dependency Edges: Edges are colored by their logical type. We intentionally collapse all prerequisite relationships into “used in”; we keep “generalized by” as the only other relation.
+- Node.js (LTS recommended)
 
-- Focus Mode: Click a node to fade out everything else, instantly isolating its direct dependencies (what it relies on) and dependents (what relies on it).
+### Install
 
-- Detailed Info Panel: Click a node to open a persistent side panel with its full content, perfect for careful reading.
+```bash
+npm install
+```
 
-- Interactive Filtering: Click on node types in the legend to toggle their visibility, allowing you to declutter the graph and focus on the core logical flow.
+### Run
 
-## How These Visualizations Are Made
+```bash
+npm run dev
+```
 
-The visualization are the automated output of a dedicated analysis engine developed as part of our research into the structure of mathematical documents. The engine parses the LaTeX source of a paper:
+Then open `http://localhost:3000/`.
 
-1. Identify core logical artifacts (theorems, lemmas, definitions, etc.).
+## Project layout
 
-2. Resolve and extract the definitions of all mathematical notations and objects to enrich each artifact with its necessary prerequisites.
-   
-3. Trace the dependency network by analyzing citations in their original context, then normalize edges for visualization: collapse to `used_in` except for `generalized_by`. All edges point prerequisite → dependent.
+- `index.html` – landing page
+- `1705.03104/` – an example constellation (static page + embedded data)
+- `assets/style.css` – shared site styling
+- `assets/modules/` – graph rendering, interactions, UI, and proof/review logic
 
-## Proof Path Explorer
+## How the visualizations are made (high level)
 
-Explore the proof structure of any artifact with a depth-controlled view.
+The interactive constellations are generated from an analysis pipeline (developed as part of ongoing research) that:
 
-How to open:
-- Right-click a node in the graph and choose "Explore Proof Path"; or
-- Click a node to open the info panel, then press the "Explore Proof Path" button.
+1. identifies logical artifacts (theorems, lemmas, definitions, …)
+2. extracts/normalizes definitions and prerequisites for richer tooltips
+3. infers citations and dependency types from context, then normalizes edges for visualization
 
-Initial State (Depth 1):
-- Shows only the selected target node and the artifacts it directly cites (its immediate prerequisites).
-- Arrows point from prerequisites to the dependent result for all views (e.g., A used_in B means “A is used in B”).
+Because this is a research system, extractions and inferred relationships may be incomplete or imperfect.
 
-Interactive Controls (rendered in the info panel while exploring a proof path):
-- < Unfold Less: Collapse one layer of prerequisites.
-- Unfold More >: Reveal the next layer of prerequisites (prerequisites of the prerequisites).
+## Data format (in this repo)
 
-Exit proof mode:
-- Click on the background (anywhere on the SVG) or press the Reset View button.
+The included example constellation page (`1705.03104/index.html`) defines `window.graphData`:
 
-Notes:
-- Explore Proof Path shows only “used in” edges (no “generalized by” edges are included).
-- While in proof mode, the legend filters are disabled for the pinned view to preserve context.
-- The depth expansion uses the paper's dependency edges; if a node has no cited prerequisites, Unfold More will not add new nodes.
+- `nodes`: `{ id, type, display_name, content_preview, prerequisites_preview, ... }`
+- `edges`: `{ source, target, dependency_type, context, ... }`
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Code of Conduct
+
+See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+
+## Security
+
+See [SECURITY.md](SECURITY.md).
+
+## License
+
+MIT © Turnstile Labs — see [LICENSE](LICENSE).

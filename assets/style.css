@@ -210,6 +210,94 @@ body.landing-page {
 }
 
 
+/* =================================================================== */
+/* --- 2b. LANDING PAGE MODAL (EXPERIMENTAL DISCLAIMER) --- */
+/* =================================================================== */
+
+.landing-page .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+  z-index: 2000;
+  display: none;
+}
+
+/* Full-screen centering wrapper */
+.landing-page .modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2001;
+  display: none;
+  place-items: center;
+  padding: 24px;
+}
+
+.landing-page .modal[data-open="true"] {
+  display: grid;
+}
+
+.landing-page .modal-overlay[data-open="true"] {
+  display: block;
+}
+
+.landing-page .modal-card {
+  width: min(560px, 100%);
+  background: var(--surface2);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 22px 22px 18px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+}
+
+.landing-page .modal-title {
+  margin: 0 0 10px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: 1.25rem;
+  color: var(--accent);
+}
+
+.landing-page .modal-body {
+  margin: 0 0 18px;
+  color: var(--secondary-text);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.landing-page .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.landing-page .modal-btn {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--surface2);
+  color: var(--primary-text);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.landing-page .modal-btn:hover {
+  background: var(--surface1);
+}
+
+.landing-page .modal-btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--background);
+}
+
+.landing-page .modal-btn--primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+
 /* ======================================================================== */
 /* --- 3. STYLES FOR VISUALIZATION PAGES (NOW WITH DARK THEME) --- */
 /* ======================================================================== */
